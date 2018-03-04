@@ -32,6 +32,10 @@
 
 ```
 
-| B↑  f112 ||          | ↓   fc11
+| B↑  f112 ||          | ↓   fc11 | 
 | B↓  f102 || ←   fc00 | ↓   fc01 | →   fc02 |
 ```
+
+##### [`"f/j"`] Default Keys:
+
+… on quertyoid layouts.

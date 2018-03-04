@@ -1,0 +1,7 @@
+{
+	"name": "@beyond-life/base",
+	"private": true,
+    "devDependencies": {
+    	"lerna": "^2.8.0"
+	}
+}
