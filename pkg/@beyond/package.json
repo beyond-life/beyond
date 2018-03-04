@@ -1,0 +1,15 @@
+{
+    "name": "@beyond-life/beyond",
+    "description": "Life and beyond…",
+    "version": "0.1.0",
+    "author": {
+        "name": "J Schnell",
+        "email": "labs@probit.link",
+        "url": "https://git.io/probit"
+    },
+    "license": "GPL-3.0",
+    "main": "src/meta.ts",
+    "devDependencies": {
+        "@types/node": "^9.4.6"
+    }
+}
