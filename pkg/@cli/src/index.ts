@@ -14,10 +14,23 @@ export namespace decl {
     export type Arg = NonOpt | Opt
 }
 
+export interface PostO {
+    _: string[]
+    [key :string] :string[]
+}
+
+type Reduc = [number, PostO]
+
 export function parse(
     decls :decl.Arg[],
 ) {
-    return (args :string[])=> {
-
+    return (
+        args :string[],
+    ) :PostO => {
+        args.reduce(
+            (l :Reduc, r): Reduc => {
+            },
+            [0, {}],
+        )
     }
 }
