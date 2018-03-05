@@ -3,6 +3,12 @@ import {
     Writable,
 } from "stream"
 
+import {
+    proto,
+} from "@beyond-life/lowbar"
+
+// ~~~
+
 export const HEX_STR :unique symbol =
     Symbol("<hexademical string>")
 
@@ -21,6 +27,5 @@ export function run(
     output :Writable,
     flags :flg.Flags = {},
 ) {
-    const flags2 = {...flags} as flg.Bluepr
-    Reflect.setPrototypeOf(flags2, flg.Bluepr.prototype)
+    const flags2 = proto(flags, flg.Bluepr)
 }

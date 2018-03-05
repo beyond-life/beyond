@@ -1,1 +1,1 @@
-law/var/cc-BY-NC-SA-4_0.md
+../law/var/cc-BY-NC-SA-4_0.md
