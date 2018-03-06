@@ -3,6 +3,10 @@ import {
     Writable,
 } from "stream"
 
+import $ from "xstream"
+import fromEv from "xstream/extra/fromEvent"
+import {run} from "@cycle/run"
+
 import {
     proto,
 } from "@beyond-life/lowbar"
@@ -28,4 +32,6 @@ export default function exec(
     flags :flg.Flags = {},
 ) {
     const flags2 = proto(flags, flg.Bluepr)
+
+    const data$ = fromEv(input, "data")
 }
