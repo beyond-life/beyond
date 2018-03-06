@@ -22,7 +22,7 @@ export namespace flg {
     export type Flags = Partial<Inter>
 }
 
-export function run(
+export default function exec(
     input :Readable,
     output :Writable,
     flags :flg.Flags = {},

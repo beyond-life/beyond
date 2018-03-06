@@ -12,6 +12,10 @@
     "main": "lib/meta.js",
     "types": "lib/meta.d.ts",
 
+    "bin": {
+        "beyond-cmd": "lib/cmd.js"
+    },
+
     "dependencies": {
         "@beyond-life/lowbar": "~0.1.0"
     },
