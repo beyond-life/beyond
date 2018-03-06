@@ -2,6 +2,12 @@ import {
     Readable,
     Writable,
 } from "stream"
+import {
+    ReadStream as ReadableTTY,
+} from "tty"
+import {
+    emitKeypressEvents,
+} from "readline"
 
 import $ from "xstream"
 import fromEv from "xstream/extra/fromEvent"
@@ -9,14 +15,16 @@ import {run} from "@cycle/run"
 
 import {
     proto,
+    Int,
 } from "@beyond-life/lowbar"
 
 // ~~~
 
 export const HEX_STR :unique symbol =
     Symbol("<hexademical string>")
-
-export type Format = typeof HEX_STR
+export const TT_STROKES :unique symbol =
+    Symbol("<teletyper keystrokes>")
+export type Format = typeof HEX_STR | typeof TT_STROKES
 
 export namespace flg {
     export class Bluepr {
@@ -57,6 +65,14 @@ export default function exec(
 
     input.resume()
 
+    const strokes = TT_STROKES === flags.format
+        ? stmTT(input)
+        : stmHex(input)
+}
+
+function stmHex(
+    input :Readable,
+) :$<Int[]> {
     const chunk$ = fromEv(input, "data")
     const chunkSeed :FoldChunkL = ["", false]
     const data$ = chunk$
@@ -69,4 +85,18 @@ export default function exec(
         error: (err)=> console.error("> " + err.message),
         complete: ()=> console.error("> Completed!"),
     })
+
+    // TODO Dummy
+    return $.fromArray([[1 as Int]])
+}
+
+function stmTT(
+    input :Readable,
+) :$<Int[]> {
+    emitKeypressEvents(process.stdin)
+    if (input instanceof ReadableTTY && input.isTTY)
+        input.setRawMode(true)
+
+    // TODO Dummy
+    return $.fromArray([[1 as Int]])
 }
