@@ -97,6 +97,16 @@ function stmTT(
     if (input instanceof ReadableTTY && input.isTTY)
         input.setRawMode(true)
 
+    const press$ = fromEv(input, "keypress")
+    
+    press$.subscribe({
+        next: (key)=> "y" === key[0]
+            ? process.exit()
+            : console.error("==> ", key),
+        error: (err)=> console.error("> " + err.message),
+        complete: ()=> console.error("> Completed!"),
+    })
+
     // TODO Dummy
     return $.fromArray([[1 as Int]])
 }
