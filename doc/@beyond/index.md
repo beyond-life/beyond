@@ -1,8 +1,7 @@
 # Keyboard Layout
 
-—*…for shy yolocaz*—
-
-## … on a *Thinkpad* Keyboard
+## Visualization
+### … on a *Thinkpad* Keyboard
 
 >   `*Ret` != `*Ent` 
 
@@ -30,6 +29,6 @@
 
 ```
 
-## Notes
+##### Notes:
 
 - Double `^Cat` `*Esc`apes.
