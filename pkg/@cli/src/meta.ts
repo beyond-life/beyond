@@ -42,7 +42,7 @@ export function short(
 ) :PropertyDecorator {
     [char] = [...char] // stripping further chars
 
-    return Reflect.metadata(schema.SYX_SHORT, char)
+    return (Reflect as any).metadata(schema.SYX_SHORT, char)
 }
 
 export function parse(
