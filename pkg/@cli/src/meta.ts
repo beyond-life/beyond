@@ -4,31 +4,12 @@ import {
     Int,
 } from "@beyond-life/lowbar"
 
+import {
+    dataType,
+    syxForm,
+} from "./schema"
+
 // ~~~
-
-export namespace schema {
-    export const F_STR :unique symbol =
-        Symbol("<string flag>")
-    export const F_NUM :unique symbol =
-        Symbol("<numeric flag>")
-    export const F_BOOL :unique symbol =
-        Symbol("<boolean flag>")
-
-    export const SYX_SHORT :unique symbol =
-        Symbol("<short flag syntax>")
-    export const SYX_LONG :unique symbol =
-        Symbol("<long flag syntax>")
-    export type Syx = typeof SYX_SHORT | typeof SYX_LONG
-
-
-    export type NonOpt = string[] | typeof F_STR | typeof F_NUM
-
-    export interface Opt {
-        [key :string] :NonOpt | typeof F_BOOL
-    }
-
-    export type Arg = NonOpt | Opt
-}
 
 export interface PostO {
     _: string[]
@@ -37,12 +18,17 @@ export interface PostO {
 
 type Reduc = [number, PostO]
 
-export function short(
-    char :string,
+export function alias(
+    ali :string[] | string,
+    form :syxForm.Uq = syxForm.SHORT,
 ) :PropertyDecorator {
-    [char] = [...char] // stripping further chars
+    const shorters :string[] = (Array.isArray(shorts)
+        ? shorts.map((char :string) :string => [...char][0])
+        : [...shorts]
+    )
+    //… Extractin first code point
 
-    return (Reflect as any).metadata(schema.SYX_SHORT, char)
+    return (Reflect as any).metadata(syxForm.SHORT, shorters)
 }
 
 export function parse(
