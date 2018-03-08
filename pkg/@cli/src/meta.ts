@@ -5,30 +5,43 @@ import {
 } from "@beyond-life/lowbar"
 
 import {
-    dataType,
-    syxForm,
+    Data,
+    SyxForm,
+    Cmd,
 } from "./schema"
 
 // ~~~
 
 export interface PostO {
-    _: string[]
-    [key :string] :string[]
+    [Cmd.DEFAULT] :any[]
+    [key :string] :any[]
 }
 
 type Reduc = [number, PostO]
 
 export function alias(
-    ali :string[] | string,
-    form :syxForm.Uq = syxForm.SHORT,
+    aliArg :string[] | string,
+    form :SyxForm.Uq = SyxForm.SHORT,
 ) :PropertyDecorator {
-    const shorters :string[] = (Array.isArray(shorts)
-        ? shorts.map((char :string) :string => [...char][0])
-        : [...shorts]
-    )
-    //… Extractin first code point
+    const isArr = Array.isArray
+    const ali :string[] = SyxForm.SHORT === form
+        ? isArr(aliArg)
+        ? aliArg.map((char :string) :string => [...char][0])
+        //… Extractin first code point
+        : [...aliArg]
 
-    return (Reflect as any).metadata(syxForm.SHORT, shorters)
+        : isArr(aliArg)
+        ? aliArg
+        : [aliArg]
+
+    return (Reflect as any).metadata(form, ali)
+}
+
+export function inital<Init>(
+
+) :PropertyDecorator {
+
+    return {} as any
 }
 
 export function parse(

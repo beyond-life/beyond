@@ -4,8 +4,18 @@ import {
 
 // ~~~
 
-// Flag's Data Type
-export namespace dataType {
+// Flag's Data Type:
+export class Data<T> {
+    constructor (
+        data :T,
+        type? :Data.Uq | undefined,
+        minCount :Int = 1 as Int,
+    ) {
+
+    }
+}
+
+export namespace Data {
     export const STR :unique symbol =
         Symbol("<string flag>")
     export const NUM :unique symbol =
@@ -16,18 +26,9 @@ export namespace dataType {
     export type Uq = typeof STR | typeof NUM | typeof BOOL
 }
 
-export class Data<T> {
-    constructor (
-        data :T,
-        type? :dataType.Uq | undefined,
-        minCount :Int = 1 as Int,
-    ) {
-
-    }
-}
 
 // Syntax From:
-export namespace syxForm {
+export namespace SyxForm {
     export const SHORT :unique symbol =
         Symbol("<short flag syntax>")
     export const LONG :unique symbol =
@@ -36,6 +37,17 @@ export namespace syxForm {
     export type Uq = typeof SHORT | typeof LONG
 }
 
-export interface Decl {
-    [key :string] :Data
+// Command:
+export interface Cmd {
+    [key :string] :Data.Uq
 }
+
+export namespace Cmd {
+    export const SUB :unique symbol =
+        Symbol("<subcommand>")
+
+    export const DEFAULT :unique symbol =
+        Symbol("<subcommand>")
+}
+
+export type Arg = Cmd | Cmd[]
