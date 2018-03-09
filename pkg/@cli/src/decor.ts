@@ -1,8 +1,7 @@
 const {
-    metadata: md,
     hasMetadata,
     getMetadata,
-    defineMetadata,
+    defineMetadata: defMd,
 } = Reflect
 
 // @@@
@@ -10,6 +9,7 @@ const {
 import {
     Int,
     isInt,
+    Prop,
     isStr,
 } from "@beyond-life/lowbar"
 
@@ -18,16 +18,13 @@ import {
     AUTOM,
     Data,
 } from "./schema"
-const {
-    Ty,
-    INITIAL,
-} = Data
+const {INITIAL} = Data
 
 // ~~~
 
 export type PropDecor = (
-    tgt :Object, //target)
-    prop :string | symbol, //property
+    tgt :Object, //target
+    prop :Prop, //property
     desc :PropertyDescriptor,
 ) => PropertyDescriptor 
 
@@ -60,20 +57,26 @@ export function alias(
             ? aliG
             : [aliG]
 
-    return (tgt, prop, desc) :PropertyDescriptor => {
+    return (tgt :Object, prop :Prop, desc :PropertyDescriptor) :PropertyDescriptor => {
         const oldAli = hasMetadata(form, tgt, prop)
             ? getMetadata(form, tgt, prop) as string[]
             : []
-        const allAli = oldAli.concat(ali.includes(AUTOM)
-            ? ali
-                .filter((char :Alias) :boolean => AUTOM !== char)
-                .concat([
-                    prop.toString()[0], //** automagic **
-                ])
-            : 
+        const allAli = oldAli.concat(
+            (ali.includes(AUTOM)
+                ? ali
+                    .filter((char :Alias) :boolean => AUTOM !== char)
+                    .concat([
+                        isStr(prop)
+                            ? prop[0] //** automagic **
+                            : (() => {
+                                throw new Error("@initial: Magician died!")
+                            })()
+                    ])
+                : ali
+            ) as string[]
         )
         
-        defineMetadata(form, allAli, tgt, prop)
+        defMd(form, allAli, tgt, prop)
 
         return desc
     }
@@ -81,7 +84,30 @@ export function alias(
 
 // sets default value:
 export function inital<Init extends Data.Ty.NativeVal>(
-    init :Init,
-) :PropertyDecorator {
-    return md(INITIAL, init)
+    init :Init | typeof AUTOM = AUTOM,
+) :PropDecor {
+    return (tgt :Object, prop :Prop, desc :PropertyDescriptor) :PropertyDescriptor => {
+        type TyUq = Data.Ty.Uq
+
+        defMd(
+            INITIAL,
+            AUTOM === init
+                ? (()=> {switch ((tgt as {[keys :string] :TyUq})[prop]) {
+                    case Data.Ty.STR:
+                        return ""
+                    case Data.Ty.NUM:
+                    case Data.Ty.NUM_INT:
+                        return 0
+                    case Data.Ty.BOOL:
+                        return !!0
+                    default:
+                        throw new Error("@initial: Magician died!")
+                }})()
+                : init,
+            tgt,
+            prop,
+        )
+        
+        return desc
+    }
 }

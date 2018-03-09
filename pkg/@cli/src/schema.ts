@@ -23,8 +23,6 @@ export namespace Data.Ty {
         Symbol("<integer-numberic flag>")
     export const BOOL :unique symbol =
         Symbol("<boolean flag>")
-    export const PATH :unique symbol =
-        Symbol("<filesystem path flag>")
         
     export type Uq = never
         | typeof STR
@@ -38,7 +36,6 @@ export namespace Data.Ty {
         [NUM] :number
         [NUM_INT] :number
         [BOOL] :boolean
-        [PATH] :string[]
     }
 }
 
