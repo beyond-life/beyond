@@ -10,16 +10,34 @@ export namespace DataTy {
         Symbol("<string flag>")
     export const NUM :unique symbol =
         Symbol("<numeric flag>")
+    export const NUM_INT :unique symbol =
+        Symbol("<integer-numberic flag>")
     export const BOOL :unique symbol =
         Symbol("<boolean flag>")
+    export const PATH :unique symbol =
+        Symbol("<filesystem path flag>")
         
-    export type Uq = typeof STR | typeof NUM | typeof BOOL
+    export type Uq = never
+        | typeof STR
+        | typeof NUM
+        | typeof NUM_INT
+        | typeof BOOL
+
+    export type NativeVal = string | boolean | number
+    export interface Ty2Native {
+        [STR] :string
+        [NUM] :number
+        [NUM_INT] :number
+        [BOOL] :boolean
+        [PATH] :string[]
+    }
 }
 
-export namespace FlagData {
-    export const INITIAL_VAL :unique symbol =
-        Symbol("<initial flag value>")
-}
+export const AUTOM :unique symbol =
+    Symbol("<automagically complete>")
+
+export const INITIAL :unique symbol =
+    Symbol("<initial flag value>")
 
 // Syntax Form:
 export namespace SyxForm {

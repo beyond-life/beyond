@@ -1,31 +1,40 @@
 import {
     SyxForm,
-    FlagData,
+    INITIAL,
+    AUTOM,
+    DataTy,
 } from "./schema"
 
 // ~~~
 
+const md = (Reflect as any)
+    .metadata as (..._ :any[])=> PropertyDecorator
+
 export function alias(
-    aliArg :string[] | string,
+    aliG :string[] | string | typeof AUTOM = AUTOM,
     form :SyxForm.Uq = SyxForm.SHORT,
 ) :PropertyDecorator {
     const isArr = Array.isArray
-    const ali :string[] = SyxForm.SHORT === form
-        ? isArr(aliArg)
-        ? aliArg.map((char :string) :string => [...char][0])
-        //… Extractin first code point
-        : [...aliArg]
+    const ali :string[] = AUTOM === aliG
+        ? []
+        : SyxForm.SHORT === form
+        ? isArr(aliG)
+            ? aliG.map((char :string) :string => [...char][0])
+            //… Extractin first code point
+            : [...aliG]
 
-        : isArr(aliArg)
-        ? aliArg
-        : [aliArg]
+        : isArr(aliG)
+            ? aliG
+            : [aliG]
 
-    return (Reflect as any).metadata(form, ali)
+    if (1 > ali.length) return md(form, ali)
+
+    return ()=> void 0 //TODO
 }
 
 // sets default value:
-export function inital<Init>(
+export function inital<Init extends DataTy.NativeVal>(
     init :Init,
 ) :PropertyDecorator {
-    return (Reflect as any).metadata(FlagData.INITIAL_VAL, ali)
+    return md(INITIAL, init)
 }
