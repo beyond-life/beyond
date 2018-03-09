@@ -8,12 +8,12 @@ import {
 // ~~~
 
 const md = (Reflect as any)
-    .metadata as (..._ :any[])=> PropertyDecorator
+    .metadata as (k :string | symbol, v: any)=> Function
 
 export function alias(
     aliG :string[] | string | typeof AUTOM = AUTOM,
     form :SyxForm.Uq = SyxForm.SHORT,
-) :PropertyDecorator {
+) {
     const isArr = Array.isArray
     const ali :string[] = AUTOM === aliG
         ? []
@@ -29,7 +29,14 @@ export function alias(
 
     if (1 > ali.length) return md(form, ali)
 
-    return ()=> void 0 //TODO
+    return <
+          Tgt extends Object>(
+        tgt :Tgt, //target
+        prop :string | symbol, //property
+        desc :PropertyDescriptor,
+    ) :PropertyDescriptor => {
+        return desc
+    }
 }
 
 // sets default value:

@@ -54,14 +54,14 @@ export namespace SyxForm {
 export interface Cmd {
     [key :string] :DataTy.Uq
 
-    [Cmd.SUB_PREAMBLE] :string[]
+    [Cmd.SUB_CMD_PREAMBLE] :string[]
 }
 
 export namespace Cmd {
     export const DASH_DASH :unique symbol =
         Symbol("<`--` \"default\" flag>")
 
-    export const SUB_PREAMBLE :unique symbol =
+    export const SUB_CMD_PREAMBLE :unique symbol =
         Symbol("<subcommand preamble words>")
 
     export abstract class Bluepr implements Cmd {
@@ -69,7 +69,7 @@ export namespace Cmd {
         //… For which reason? Y do I have to write the
         //  index in front of the properties?
 
-        [Cmd.SUB_PREAMBLE] :string[] = []
+        [Cmd.SUB_CMD_PREAMBLE] :string[] = []
     }
 }
 

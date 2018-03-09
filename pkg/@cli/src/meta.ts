@@ -1,5 +1,9 @@
 import "reflect-metadata"
 
+import {
+    normalize,
+} from "path"
+
 // @@@
 
 import {
@@ -27,7 +31,7 @@ export function parse(
 ) {
     return (
         args :string[],
-    ) :PostO => {
+    ) :PostO[] => {
         args.reduce(
             (l :Reduc, r): Reduc => {
                 const {startsWith} = r
@@ -44,5 +48,7 @@ export function parse(
             },
             [],
         )
+
+        return [] //TODO
     }
 }
