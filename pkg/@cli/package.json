@@ -2,22 +2,20 @@
     "name": "@beyond-life/cli",
     "description": "Command line and beyond…",
     "version": "0.1.0",
-
     "author": {
         "name": "J Schnell",
         "email": "labs@probit.link",
         "url": "https://git.io/probit"
     },
     "license": "GPL-3.0",
-
     "main": "lib/meta.js",
     "types": "lib/meta.d.ts",
-
     "dependencies": {
         "@beyond-life/lowbar": "~0.1.0",
         "reflect-metadata": "^0.1.12"
     },
     "devDependencies": {
-        "@types/node": "^9.4.6"
+        "@types/node": "^9.4.6",
+        "@types/reflect-metadata": "^0.1.0"
     }
 }

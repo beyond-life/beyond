@@ -1,3 +1,12 @@
+const {
+    metadata: md,
+    hasMetadata,
+    getMetadata,
+    defineMetadata,
+} = Reflect
+
+// @@@
+
 import {
     SyxForm,
     AUTOM,
@@ -7,11 +16,23 @@ const {Ty, INITIAL} = Data
 
 // ~~~
 
-const md = (Reflect as any)
-    .metadata as (k :string | symbol, v: any)=> Function
+export type PropDecor = (
+    tgt :Object, //target
+    prop :string | symbol, //property
+    desc :PropertyDescriptor,
+) => PropertyDescriptor 
 
+export type AliasG = string | typeof AUTOM
 export function alias(
-    aliG :string[] | string | typeof AUTOM = AUTOM,
+    aliG :AliasG | AliasG[],
+    form :typeof SyxForm.SHORT,
+) :PropDecor
+export function alias(
+    aliG :string | string[],
+    form :typeof SyxForm.LONG,
+) :PropDecor
+export function alias(
+    aliG :AliasG | AliasG[] = AUTOM,
     form :SyxForm.Uq = SyxForm.SHORT,
 ) {
     const isArr = Array.isArray
@@ -27,14 +48,16 @@ export function alias(
             ? aliG
             : [aliG]
 
-    if (1 > ali.length) return md(form, ali)
+    return (tgt, prop, desc) :PropertyDescriptor => {
+        const oldAli = hasMetadata(form, tgt, prop)
+            ? getMetadata(form, tgt, prop) as string[]
+            : []
+        const allAli = oldAli.concat(ali.includes(AUTOM)
+            ? prop.toString()[0] //** automagic **
+        )
+        
+        defineMetadata(form, allAli, tgt, prop)
 
-    return <
-          Tgt extends Object>(
-        tgt :Tgt, //target
-        prop :string | symbol, //property
-        desc :PropertyDescriptor,
-    ) :PropertyDescriptor => {
         return desc
     }
 }
