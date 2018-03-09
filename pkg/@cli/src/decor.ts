@@ -8,42 +8,54 @@ const {
 // @@@
 
 import {
+    Int,
+    isInt,
+    isStr,
+} from "@beyond-life/lowbar"
+
+import {
     SyxForm,
     AUTOM,
     Data,
 } from "./schema"
-const {Ty, INITIAL} = Data
+const {
+    Ty,
+    INITIAL,
+} = Data
 
 // ~~~
 
 export type PropDecor = (
-    tgt :Object, //target
+    tgt :Object, //target)
     prop :string | symbol, //property
     desc :PropertyDescriptor,
 ) => PropertyDescriptor 
 
-export type AliasG = string | typeof AUTOM
+export type Alias = string | typeof AUTOM
 export function alias(
-    aliG :AliasG | AliasG[],
+    aliG :Alias | Alias[],
     form :typeof SyxForm.SHORT,
 ) :PropDecor
 export function alias(
-    aliG :string | string[],
+    aliG :string[],
     form :typeof SyxForm.LONG,
 ) :PropDecor
 export function alias(
-    aliG :AliasG | AliasG[] = AUTOM,
+    aliG :Alias | Alias[] = AUTOM,
     form :SyxForm.Uq = SyxForm.SHORT,
 ) {
     const isArr = Array.isArray
-    const ali :string[] = AUTOM === aliG
-        ? []
-        : SyxForm.SHORT === form
+    const ali :Alias[] = SyxForm.SHORT === form
         ? isArr(aliG)
-            ? aliG.map((char :string) :string => [...char][0])
+            ? aliG.map((a :Alias) :Alias =>
+                isStr(a) ? [...a][0] : a
+            ) as Alias[]
             //… Extractin first code point
-            : [...aliG]
+        : isStr(aliG)
+            ? [...aliG]
+            : [aliG]
 
+        //  when `aliG` is LONG form:
         : isArr(aliG)
             ? aliG
             : [aliG]
@@ -53,7 +65,12 @@ export function alias(
             ? getMetadata(form, tgt, prop) as string[]
             : []
         const allAli = oldAli.concat(ali.includes(AUTOM)
-            ? prop.toString()[0] //** automagic **
+            ? ali
+                .filter((char :Alias) :boolean => AUTOM !== char)
+                .concat([
+                    prop.toString()[0], //** automagic **
+                ])
+            : 
         )
         
         defineMetadata(form, allAli, tgt, prop)
