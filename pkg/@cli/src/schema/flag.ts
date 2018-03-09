@@ -4,17 +4,17 @@ import {
 
 // ~~~
 
-// Flag's Data:
+// Data:
 export namespace Data {
-    export const CONTENT :unique symbol =
-        Symbol("<data content>")
+    export const SY_DATA :unique symbol =
+        Symbol("<data content symbolization>")
 
     export const INITIAL :unique symbol =
-        Symbol("<initial flag value>")
+        Symbol("<flag's initial data value>")
 }    
 
-// Flag's Data Type:
-export namespace Data.Ty {
+// Data Type:
+export namespace Ty {
     export const STR :unique symbol =
         Symbol("<string flag>")
     export const NUM : unique symbol =
@@ -42,7 +42,14 @@ export namespace Data.Ty {
 export const AUTOM :unique symbol =
     Symbol("<automagically complete>")
 
-// Syntax Form:
+
+// Flag
+export namespace Flag {
+    export const SY_FLAG :unique symbol =
+        Symbol("<flag content symbolization>")
+}
+
+// Flag's Syntax Form:
 export namespace SyxForm {
     export const SHORT :unique symbol =
         Symbol("<short flag syntax>")
@@ -50,30 +57,4 @@ export namespace SyxForm {
         Symbol("<long flag syntax>")
 
     export type Uq = typeof SHORT | typeof LONG
-    export type Flag = Uq | typeof Cmd.DASH_DASH
 }
-
-// Command Interface:
-export interface Cmd {
-    [key :string] :Data.Ty.Uq
-
-    [Cmd.SUB_CMD_PREAMBLE] :string[]
-}
-
-export namespace Cmd {
-    export const DASH_DASH :unique symbol =
-        Symbol("<`--` \"default\" flag>")
-
-    export const SUB_CMD_PREAMBLE :unique symbol =
-        Symbol("<subcommand preamble words>")
-
-    export abstract class Bluepr implements Cmd {
-        [key :string] :Data.Ty.Uq
-        //… For which reason? Y do I have to write the
-        //  index in front of the properties?
-
-        [Cmd.SUB_CMD_PREAMBLE] :string[] = []
-    }
-}
-
-export type Arg = Cmd | Cmd[]

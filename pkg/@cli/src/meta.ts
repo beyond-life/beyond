@@ -13,10 +13,11 @@ import {
 import {
     Data,
     SyxForm,
+} from "./schema/flag"
+import {
+    Arg, 
     Cmd,
-    Arg,
-} from "./schema"
-const {Ty, INITIAL} = Data
+} from "./schema/cmd"
 
 // ~~~
 
@@ -28,12 +29,12 @@ export interface PostO {
 namespace Env {
     export const {SHORT} = SyxForm
     export const {DASH_DASH} = Cmd
-    export const {CONTENT} = Data
+    export const {SY_DATA} = Data
 
     export type Uq = never
         | typeof SHORT
         | typeof DASH_DASH
-        | typeof CONTENT
+        | typeof SY_DATA
 }
 
 interface Reduc {
@@ -75,8 +76,8 @@ export function parse(
                 const content = r.substr(shift[0], shift[1])
             },
             {
-                tail: args.join(" "),
-                env: Env.CONTENT,
+                tail: args,
+                env: Env.SY_DATA,
             },
         )
 

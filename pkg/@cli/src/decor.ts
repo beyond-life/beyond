@@ -17,7 +17,8 @@ import {
     SyxForm,
     AUTOM,
     Data,
-} from "./schema"
+    Ty,
+} from "./schema/flag"
 const {INITIAL} = Data
 
 // ~~~
@@ -83,22 +84,20 @@ export function alias(
 }
 
 // sets default value:
-export function inital<Init extends Data.Ty.NativeVal>(
+export function inital<Init extends Ty.NativeVal>(
     init :Init | typeof AUTOM = AUTOM,
 ) :PropDecor {
     return (tgt :Object, prop :Prop, desc :PropertyDescriptor) :PropertyDescriptor => {
-        type TyUq = Data.Ty.Uq
-
         defMd(
             INITIAL,
             AUTOM === init
-                ? (()=> {switch ((tgt as {[keys :string] :TyUq})[prop]) {
-                    case Data.Ty.STR:
+                ? (()=> {switch ((tgt as {[keys :string] :Ty.Uq})[prop]) {
+                    case Ty.STR:
                         return ""
-                    case Data.Ty.NUM:
-                    case Data.Ty.NUM_INT:
+                    case Ty.NUM:
+                    case Ty.NUM_INT:
                         return 0
-                    case Data.Ty.BOOL:
+                    case Ty.BOOL:
                         return !!0
                     default:
                         throw new Error("@initial: Magician died!")
