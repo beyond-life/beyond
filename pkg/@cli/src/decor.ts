@@ -23,6 +23,7 @@ const {INITIAL} = Data
 
 // ~~~
 
+export type PropDesc = PropertyDescriptor
 export type PropDecor = (
     tgt :Object, //target
     prop :Prop, //property
@@ -58,7 +59,7 @@ export function alias(
             ? aliG
             : [aliG]
 
-    return (tgt :Object, prop :Prop, desc :PropertyDescriptor) :PropertyDescriptor => {
+    return (tgt :Object, prop :Prop, desc :PropDesc) :PropDesc => {
         const oldAli = hasMetadata(form, tgt, prop)
             ? getMetadata(form, tgt, prop) as string[]
             : []
@@ -87,7 +88,7 @@ export function alias(
 export function inital<Init extends Ty.NativeVal>(
     init :Init | typeof AUTOM = AUTOM,
 ) :PropDecor {
-    return (tgt :Object, prop :Prop, desc :PropertyDescriptor) :PropertyDescriptor => {
+    return (tgt :Object, prop :Prop, desc :PropDesc) :PropDesc => {
         defMd(
             INITIAL,
             AUTOM === init
