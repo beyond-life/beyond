@@ -1,51 +1,29 @@
 import "reflect-metadata"
 
+// @@@
+
 import {
     Int,
 } from "@beyond-life/lowbar"
 
 import {
-    Data,
+    DataTy,
     SyxForm,
     Cmd,
+    Arg,
 } from "./schema"
 
 // ~~~
 
 export interface PostO {
-    [Cmd.DEFAULT] :any[]
+    [Cmd.DASH_DASH] :any[]
     [key :string] :any[]
 }
 
 type Reduc = [number, PostO]
 
-export function alias(
-    aliArg :string[] | string,
-    form :SyxForm.Uq = SyxForm.SHORT,
-) :PropertyDecorator {
-    const isArr = Array.isArray
-    const ali :string[] = SyxForm.SHORT === form
-        ? isArr(aliArg)
-        ? aliArg.map((char :string) :string => [...char][0])
-        //… Extractin first code point
-        : [...aliArg]
-
-        : isArr(aliArg)
-        ? aliArg
-        : [aliArg]
-
-    return (Reflect as any).metadata(form, ali)
-}
-
-export function inital<Init>(
-
-) :PropertyDecorator {
-
-    return {} as any
-}
-
 export function parse(
-    decls :schema.Arg[],
+    decls :Arg[],
 ) {
     return (
         args :string[],
@@ -53,16 +31,16 @@ export function parse(
         args.reduce(
             (l :Reduc, r): Reduc => {
                 const {startsWith} = r
-                const kind :[
-                    schema.Syx | null,
+                const rSyxForm :[
+                    SyxForm.Flag,
                     Int,
-                ][] = startsWith("--")
-                    ? [schema.SYX_LONG, 2]
+                ] = startsWith("--")
+                    ? [SyxForm.LONG, 2 as Int]
                     : startsWith("-")
-                    ? [schema.SYX_SHORT, 1]
-                    : [null, 0]
+                    ? [SyxForm.SHORT, 1 as Int]
+                    : [Cmd.DASH_DASH, 0 as Int]
 
-               const content = r.substr(kind[1])
+               const content = r.substr(rSyxForm[1])
             },
             [],
         )
