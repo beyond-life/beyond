@@ -1,9 +1,9 @@
 import {
     SyxForm,
-    INITIAL,
     AUTOM,
-    DataTy,
+    Data,
 } from "./schema"
+const {Ty, INITIAL} = Data
 
 // ~~~
 
@@ -40,7 +40,7 @@ export function alias(
 }
 
 // sets default value:
-export function inital<Init extends DataTy.NativeVal>(
+export function inital<Init extends Data.Ty.NativeVal>(
     init :Init,
 ) :PropertyDecorator {
     return md(INITIAL, init)

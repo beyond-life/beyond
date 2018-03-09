@@ -4,11 +4,20 @@ import {
 
 // ~~~
 
+// Flag's Data:
+export namespace Data {
+    export const CONTENT :unique symbol =
+        Symbol("<data content>")
+
+    export const INITIAL :unique symbol =
+        Symbol("<initial flag value>")
+}    
+
 // Flag's Data Type:
-export namespace DataTy {
+export namespace Data.Ty {
     export const STR :unique symbol =
         Symbol("<string flag>")
-    export const NUM :unique symbol =
+    export const NUM : unique symbol =
         Symbol("<numeric flag>")
     export const NUM_INT :unique symbol =
         Symbol("<integer-numberic flag>")
@@ -36,9 +45,6 @@ export namespace DataTy {
 export const AUTOM :unique symbol =
     Symbol("<automagically complete>")
 
-export const INITIAL :unique symbol =
-    Symbol("<initial flag value>")
-
 // Syntax Form:
 export namespace SyxForm {
     export const SHORT :unique symbol =
@@ -52,7 +58,7 @@ export namespace SyxForm {
 
 // Command Interface:
 export interface Cmd {
-    [key :string] :DataTy.Uq
+    [key :string] :Data.Ty.Uq
 
     [Cmd.SUB_CMD_PREAMBLE] :string[]
 }
@@ -65,7 +71,7 @@ export namespace Cmd {
         Symbol("<subcommand preamble words>")
 
     export abstract class Bluepr implements Cmd {
-        [key :string] :DataTy.Uq
+        [key :string] :Data.Ty.Uq
         //… For which reason? Y do I have to write the
         //  index in front of the properties?
 
