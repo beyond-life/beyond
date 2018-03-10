@@ -47,6 +47,8 @@ export const AUTOM :unique symbol =
 export namespace Flag {
     export const SY_FLAG :unique symbol =
         Symbol("<flag content symbolization>")
+    export const SY_MAIN :unique symbol =
+        Symbol("<main content symbolization>")
 }
 
 // Flag's Syntax Form:

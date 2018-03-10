@@ -53,9 +53,7 @@ function shiftRel(
         [Flag.SY_FLAG]: flagDelims,
         [Data.SY_DATA]: dataDelims,
     } :Delim.Inter,
-) :{
-    shift :Int[]
-} {
+) {
     if (env === SyxForm.SHORT) return {
         shift: [0 as Int, 1 as Int],
     }
@@ -63,14 +61,31 @@ function shiftRel(
     const {startsWith, indexOf} = tail
 
     const flagDelimLens = (flagDelims as Stripple).map((e, i) =>
-        [i, e.length]
+        [i, e, e.length] as [Int, string, Int]
     ).sort((l, r) =>
-        l[1] - r[1]
+        l[2] - r[2]
     )
+    const flagKindI = flagDelimLens.reduce((
+        l :Int | null,
+        [kindI, delim, len] :[Int, string, Int],
+        i :number,
+    ) :Int | null => {
+        if (isInt(l)) return l
 
-    //TODO
+        if (!startsWith(delim)) return null
 
-    throw new Error("preparse: Flag expected!")
+        return kindI
+    }, null)
+    const flagKindSy = (() => {switch (flagKindI) {
+        case 0:
+            return Cmd.DASH_DASH
+        case 1:
+            return SyxForm.SHORT
+        case 2:
+            return SyxForm.LONG
+        case null:
+            //TODO
+    }})()
 }
 
 export default function preparse(
