@@ -27,6 +27,15 @@ export namespace Env {
         | typeof SY_DATA
 }
 
+export namespace Delim {
+    export class Bluepr {
+        ;[Flag.SY_FLAG] :Stripple = ["-- ", "-", "--"]
+        ;[Data.SY_DATA] :Stripple = ["=", "", ","]
+    }
+
+    export interface Inter extends Bluepr {}
+}
+
 export interface Reduc {
     tail :string
     env :Env.Uq
@@ -40,39 +49,33 @@ export type Stripple = [
 function shiftRel(
     tail :string,
     env :Env.Uq,
+    {
+        [Flag.SY_FLAG]: flagDelims,
+        [Data.SY_DATA]: dataDelims,
+    } :Delim.Inter,
 ) :{
     shift :Int[]
 } {
-    const {startsWith, indexOf} = tail
-    const spaceI = indexOf(" ") as Int
-
-    if (env === SyxForm.SHORT)
-        return {
-            shift: [0 as Int, 1 as Int],
-        }
-    else
-    if (startsWith("--")) {
-        const lShift = 2 as Int
-        return {
-            shift: [lShift, spaceI - lShift as Int],
-        }
-    } else
-    if (startsWith("-")) {
-        const lShift = 1 as Int
-        return {
-            shift: [0 as Int, 9 as Int],
-        }
+    if (env === SyxForm.SHORT) return {
+        shift: [0 as Int, 1 as Int],
     }
+
+    const {startsWith, indexOf} = tail
+
+    const flagDelimLens = (flagDelims as Stripple).map((e, i) =>
+        [i, e.length]
+    ).sort((l, r) =>
+        l[1] - r[1]
+    )
+
+    //TODO
 
     throw new Error("preparse: Flag expected!")
 }
 
 export default function preparse(
     args :string[],
-    delims = new class {
-        ;[Flag.SY_FLAG] :Stripple = ["-- ", "-", "--"]
-        ;[Data.SY_DATA] :Stripple = ["=", "", ","]
-    },
+    delims :Delim.Inter = new Delim.Bluepr,
 ) {
 
 }
