@@ -14,10 +14,12 @@ import {
 } from "@beyond-life/lowbar"
 
 import {
-    SyxForm,
-    AUTOM,
     Data,
     Ty,
+} from "./schema/data"
+import {
+    SyxForm,
+    AUTOM,
 } from "./schema/flag"
 const {INITIAL} = Data
 

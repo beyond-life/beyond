@@ -12,6 +12,8 @@ import {
 
 import {
     Data,
+} from "./schema/data"
+import {
     SyxForm,
 } from "./schema/flag"
 import {
@@ -21,14 +23,11 @@ import {
 
 // ~~~
 
-export interface PostO {
-    [Cmd.DASH_DASH] :any[]
-    [key :string] :any[]
-}
-
 export function parse(
     decls :Arg[],
 ) {
-    return (args :string[]) :PostO[] => {
+    return (args :string[]) :any[] => {
+        // TODO
+        return []
     }
 }
