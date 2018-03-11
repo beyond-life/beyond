@@ -5,9 +5,9 @@ import {
     isStr,
 } from "@beyond-life/lowbar"
 
+import {Data} from "./schema/data"
 import {
     AUTOM,
-    Data,
     Flag,
     SyxForm,
 } from "./schema/flag"
@@ -17,7 +17,7 @@ import {Cmd} from "./schema/cmd"
 // ~~~
 
 export namespace Env {
-    export const {SHORT} = SyxForm
+    export const {SHORT, LONG} = SyxForm
     export const {DASH_DASH} = Cmd
     export const {SY_DATA} = Data
 
@@ -46,46 +46,49 @@ export type Stripple = [
       string, //short syntax form
       string] //long syntax form
 
-function shiftRel(
+function recogFlag(
     tail :string,
     env :Env.Uq,
     {
         [Flag.SY_FLAG]: flagDelims,
         [Data.SY_DATA]: dataDelims,
     } :Delim.Inter,
-) {
-    if (env === SyxForm.SHORT) return {
-        shift: [0 as Int, 1 as Int],
-    }
+) :[Env.Uq, Int] | null {
+    if (env === SyxForm.SHORT) return [Env.SHORT, 0 as Int]
 
     const {startsWith, indexOf} = tail
 
-    const flagDelimLens = (flagDelims as Stripple).map((e, i) =>
+    const delimLengths = (flagDelims as Stripple).map((e, i) =>
         [i, e, e.length] as [Int, string, Int]
     ).sort((l, r) =>
         l[2] - r[2]
     )
-    const flagKindI = flagDelimLens.reduce((
-        l :Int | null,
+    const [kindI, shiftLen] = delimLengths.reduce((
+        l :[Int, Int] | [null, null],
         [kindI, delim, len] :[Int, string, Int],
         i :number,
-    ) :Int | null => {
-        if (isInt(l)) return l
+    ) :[Int, Int] | [null, null] => {
+        if (null !== l[0]) return l
 
-        if (!startsWith(delim)) return null
+        if (!startsWith(delim)) return [null, null]
 
-        return kindI
-    }, null)
-    const flagKindSy = (() => {switch (flagKindI) {
+        return [kindI, len as Int]
+    }, [null, null])
+    const kindSy = (() => {switch (kindI) {
         case 0:
-            return Cmd.DASH_DASH
+            return Env.DASH_DASH
         case 1:
-            return SyxForm.SHORT
+            return Env.SHORT
         case 2:
-            return SyxForm.LONG
+            return Env.LONG
         case null:
-            //TODO
+        default:
+            return null
     }})()
+
+    return null === kindSy
+        ? null
+        : [kindSy, shiftLen] as [Env.Uq, Int] 
 }
 
 export default function preparse(
