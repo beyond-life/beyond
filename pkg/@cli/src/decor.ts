@@ -7,8 +7,7 @@ const {
 // @@@
 
 import {
-    Int,
-    isInt,
+    Int, isInt,
     Prop,
     isStr,
 } from "@beyond-life/lowbar"

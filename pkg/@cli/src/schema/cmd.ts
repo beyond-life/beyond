@@ -2,11 +2,13 @@ import {
     Int,
 } from "@beyond-life/lowbar"
 
+import {Ty} from "./data"
+
 // ~~~
 
 // Command Interface:
 export interface Cmd {
-    [key :string] :Data.Ty.Uq
+    [key :string] :Ty.Uq
 
     [Cmd.SUB_CMD_PREAMBLE] :string[]
 }
@@ -19,7 +21,7 @@ export namespace Cmd {
         Symbol("<subcommand preamble words>")
 
     export abstract class Bluepr implements Cmd {
-        [key :string] :Data.Ty.Uq
+        [key :string] :Ty.Uq
         //… For which reason? Y do I have to write the
         //  index in front of the properties?
 

@@ -14,25 +14,15 @@ import {
     Flag,
     SyxForm,
 } from "./schema/flag"
-
 import {Cmd} from "./schema/cmd"
 
+import {
+    FlagTy,
+    Bluepr as EnvBluepr,
+    default as Env,
+} from "./parse-env"
+
 // ~~~
-
-export namespace FlagTy {
-    export const {SHORT, LONG} = SyxForm
-    export const {DASH_DASH} = Cmd
-    export const {SY_DATA} = Data
-
-    export type Uq = never
-        | typeof SHORT
-        | typeof DASH_DASH
-        | typeof SY_DATA
-}
-
-export type Env = never
-        | FlagTy.Uq
-        | Ty.Uq
 
 export namespace Delim {
     export class Bluepr {
@@ -41,11 +31,6 @@ export namespace Delim {
     }
 
     export interface Inter extends Bluepr {}
-}
-
-export interface Reduc {
-    tail :string
-    env :FlagTy.Uq
 }
 
 export type Stripple = [
@@ -99,7 +84,7 @@ function recogFlag(
     if (env === FlagTy.SHORT) {
         const poi = tail.codePointAt(0)
 
-        if (digitMap) //TODO
+        if (digitMap) //TODOO
         return [FlagTy.SHORT, 0 as Int]
     }
 
