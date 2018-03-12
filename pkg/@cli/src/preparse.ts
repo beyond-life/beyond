@@ -5,7 +5,10 @@ import {
     isStr,
 } from "@beyond-life/lowbar"
 
-import {Data} from "./schema/data"
+import {
+    Data,
+    Ty,
+} from "./schema/data"
 import {
     AUTOM,
     Flag,
@@ -16,7 +19,7 @@ import {Cmd} from "./schema/cmd"
 
 // ~~~
 
-export namespace Env {
+export namespace FlagTy {
     export const {SHORT, LONG} = SyxForm
     export const {DASH_DASH} = Cmd
     export const {SY_DATA} = Data
@@ -26,6 +29,10 @@ export namespace Env {
         | typeof DASH_DASH
         | typeof SY_DATA
 }
+
+export type Env = never
+        | FlagTy.Uq
+        | Ty.Uq
 
 export namespace Delim {
     export class Bluepr {
@@ -38,7 +45,7 @@ export namespace Delim {
 
 export interface Reduc {
     tail :string
-    env :Env.Uq
+    env :FlagTy.Uq
 }
 
 export type Stripple = [
@@ -46,10 +53,12 @@ export type Stripple = [
       string, //short syntax form
       string] //long syntax form
 
-function recogKind(
+function recogKind<
+      Kind extends symbol>(
     tail :string,
     delim3 :Stripple,
-) {
+    kinds :Kind[],
+) :[Kind, Int] | null {
     const dLengths = delim3.map((e, i) =>
         [i, e, e.length] as [Int, string, Int]
     ).sort((l, r) =>
@@ -74,40 +83,38 @@ function recogKind(
         return [kindI, curLen as Int]
     }, [null, null])
 
-    return i && [i, len]
+    return i && len && [kinds[i], len]
+}
+
+const dig = {
+    d: [0x30, 0x39],
+    x: [0x41, 0x46],
 }
 
 function recogFlag(
     tail :string,
-    env :Env.Uq,
+    env :Env,
     {[Flag.SY_FLAG]: flagDelims} :Delim.Inter,
-) :[Env.Uq, Int] | null {
-    if (env === SyxForm.SHORT) return [Env.SHORT, 0 as Int]
+) :[FlagTy.Uq, Int] | null {
+    if (env === FlagTy.SHORT) {
+        const poi = tail.codePointAt(0)
 
-    const kindRecog = recogKind(tail, flagDelims)
+        if (dig) //TODO
+        return [FlagTy.SHORT, 0 as Int]
+    }
 
-    if (null === kindRecog) return null
+    const kindRecog = recogKind(tail, flagDelims, [
+        FlagTy.DASH_DASH,
+        FlagTy.SHORT,
+        FlagTy.LONG,
+    ])
 
-    const kindSy = (() => {switch (kindRecog[0]) {
-        case 0:
-            return Env.DASH_DASH
-        case 1:
-            return Env.SHORT
-        case 2:
-            return Env.LONG
-        case null:
-        default:
-            return null
-    }})()
-
-    return null === kindSy
-        ? null
-        : [kindSy, kindRecog[1]] as [Env.Uq, Int] 
+    return kindRecog
 }
 
 function recogData(
     tail :string,
-    env :Env.Uq,
+    env :Env,
     {[Data.SY_DATA]: dataDelims} :Delim.Inter,
 ) {
 
@@ -118,7 +125,7 @@ export default function preparse(
     delims :Delim.Inter = new Delim.Bluepr,
 ) {
     const argStr = args.join("\n")
-    const env = Env.DASH_DASH
+    const env = FlagTy.DASH_DASH
 
     const flagRecog = recogFlag(
         argStr,
