@@ -46,37 +46,49 @@ export type Stripple = [
       string, //short syntax form
       string] //long syntax form
 
-function recogFlag(
+function recogKind(
     tail :string,
-    env :Env.Uq,
-    {
-        [Flag.SY_FLAG]: flagDelims,
-        [Data.SY_DATA]: dataDelims,
-    } :Delim.Inter,
-) :[Env.Uq, Int] | null {
-    if (env === SyxForm.SHORT) return [Env.SHORT, 0 as Int]
-
-    const delimLengths = (flagDelims as Stripple).map((e, i) =>
+    delim3 :Stripple,
+) {
+    const dLengths = delim3.map((e, i) =>
         [i, e, e.length] as [Int, string, Int]
     ).sort((l, r) =>
         r[2] - l[2]
     )
-    const [kindI, shiftLen] = delimLengths.reduce((
+    const [i, len] = dLengths.reduce((
         l :[Int, Int] | [null, null],
-        [kindI, delim, len] :[Int, string, Int],
+        [kindI, curDelim, curLen] :[Int, string, Int],
         i :number,
     ) :[Int, Int] | [null, null] => {
         if (null !== l[0]) {
-            console.log(`\n$ Matched delim: <<${flagDelims[l[0]]}>> (${l[0]})`)
+            const matDelim = delim3[l[0]!]
+            console.log(
+                `\n$  Matched delim: <<${matDelim}>> (${l[0]})`,
+            )
             return l
         }
 
-        console.log("\n$ Testing delim: <<" + delim + ">>")
-        if (!tail.startsWith(delim)) return [null, null]
+        console.log("\n$  Testing delim: <<" + curDelim + ">>")
+        if (!tail.startsWith(curDelim)) return [null, null]
 
-        return [kindI, len as Int]
+        return [kindI, curLen as Int]
     }, [null, null])
-    const kindSy = (() => {switch (kindI) {
+
+    return i && [i, len]
+}
+
+function recogFlag(
+    tail :string,
+    env :Env.Uq,
+    {[Flag.SY_FLAG]: flagDelims} :Delim.Inter,
+) :[Env.Uq, Int] | null {
+    if (env === SyxForm.SHORT) return [Env.SHORT, 0 as Int]
+
+    const kindRecog = recogKind(tail, flagDelims)
+
+    if (null === kindRecog) return null
+
+    const kindSy = (() => {switch (kindRecog[0]) {
         case 0:
             return Env.DASH_DASH
         case 1:
@@ -90,22 +102,41 @@ function recogFlag(
 
     return null === kindSy
         ? null
-        : [kindSy, shiftLen] as [Env.Uq, Int] 
+        : [kindSy, kindRecog[1]] as [Env.Uq, Int] 
+}
+
+function recogData(
+    tail :string,
+    env :Env.Uq,
+    {[Data.SY_DATA]: dataDelims} :Delim.Inter,
+) {
+
 }
 
 export default function preparse(
     args :string[],
     delims :Delim.Inter = new Delim.Bluepr,
 ) {
-    const recog = recogFlag(
-        args.join("\n"),
-        Env.DASH_DASH,
+    const argStr = args.join("\n")
+    const env = Env.DASH_DASH
+
+    const flagRecog = recogFlag(
+        argStr,
+        env,
         delims,
     )
-    if (recog !== null) {
-        console.log(recog[0])
-        console.log(recog[1])
+
+    if (null === flagRecog) {
+        console.log("\n!  No flag recognized…")
+
+        const dataRecog = recogData(
+            argStr,
+            env,
+            delims,
+        )
     } else {
-        console.log("==NO FLAG==")
+        console.log(
+            `\n!  Flag recognized: ${flagRecog[0]}`
+        )
     }
 }
