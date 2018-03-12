@@ -29,7 +29,7 @@ export namespace Env {
 
 export namespace Delim {
     export class Bluepr {
-        ;[Flag.SY_FLAG] :Stripple = ["-- ", "-", "--"]
+        ;[Flag.SY_FLAG] :Stripple = ["--\n", "-", "--"]
         ;[Data.SY_DATA] :Stripple = ["=", "", ","]
     }
 
@@ -56,21 +56,23 @@ function recogFlag(
 ) :[Env.Uq, Int] | null {
     if (env === SyxForm.SHORT) return [Env.SHORT, 0 as Int]
 
-    const {startsWith, indexOf} = tail
-
     const delimLengths = (flagDelims as Stripple).map((e, i) =>
         [i, e, e.length] as [Int, string, Int]
     ).sort((l, r) =>
-        l[2] - r[2]
+        r[2] - l[2]
     )
     const [kindI, shiftLen] = delimLengths.reduce((
         l :[Int, Int] | [null, null],
         [kindI, delim, len] :[Int, string, Int],
         i :number,
     ) :[Int, Int] | [null, null] => {
-        if (null !== l[0]) return l
+        if (null !== l[0]) {
+            console.log(`\n$ Matched delim: <<${flagDelims[l[0]]}>> (${l[0]})`)
+            return l
+        }
 
-        if (!startsWith(delim)) return [null, null]
+        console.log("\n$ Testing delim: <<" + delim + ">>")
+        if (!tail.startsWith(delim)) return [null, null]
 
         return [kindI, len as Int]
     }, [null, null])
@@ -95,5 +97,15 @@ export default function preparse(
     args :string[],
     delims :Delim.Inter = new Delim.Bluepr,
 ) {
-
+    const recog = recogFlag(
+        args.join("\n"),
+        Env.DASH_DASH,
+        delims,
+    )
+    if (recog !== null) {
+        console.log(recog[0])
+        console.log(recog[1])
+    } else {
+        console.log("==NO FLAG==")
+    }
 }
