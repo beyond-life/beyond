@@ -8,19 +8,19 @@ import {
 import {
     Data,
     Ty,
-} from "./schema/data"
+} from "../schema/data"
 import {
     AUTOM,
     Flag,
     SyxForm,
-} from "./schema/flag"
-import {Cmd} from "./schema/cmd"
+} from "../schema/flag"
+import {Cmd} from "../schema/cmd"
 
 import {
     FlagTy,
     Bluepr as EnvBluepr,
     default as Env,
-} from "./parse-env"
+} from "./env"
 
 // ~~~
 
@@ -81,7 +81,7 @@ function recogFlag(
     env :Env,
     {[Flag.SY_FLAG]: flagDelims} :Delim.Inter,
 ) :[FlagTy.Uq, Int] | null {
-    if (env === FlagTy.SHORT) {
+    if (env.flagTy === FlagTy.SHORT) {
         const poi = tail.codePointAt(0)
 
         if (digitMap) //TODOO
@@ -110,7 +110,7 @@ export default function preparse(
     delims :Delim.Inter = new Delim.Bluepr,
 ) {
     const argStr = args.join("\n")
-    const env = FlagTy.DASH_DASH
+    const env = new EnvBluepr()
 
     const flagRecog = recogFlag(
         argStr,

@@ -5,12 +5,12 @@ import {
 import {
     Data,
     Ty,
-} from "./schema/data"
+} from "../schema/data"
 import {
     SyxForm,
     Flag,
-} from "./schema/flag"
-import {Cmd} from "./schema/cmd"
+} from "../schema/flag"
+import {Cmd} from "../schema/cmd"
 
 // ~~~
 
