@@ -1,8 +1,8 @@
 import {
-    Int,
-    isInt,
+    Int, isInt,
     Prop,
     isStr,
+    till, range,
 } from "@beyond-life/lowbar"
 
 import {
@@ -86,9 +86,9 @@ function recogKind<
     return i && len && [kinds[i], len]
 }
 
-const dig = {
-    d: [0x30, 0x39],
-    x: [0x41, 0x46],
+const digitMap = {
+    d: till(range(0x30 as Int), 0x39 as Int),
+    x: till(range(0x41 as Int), 0x46 as Int),
 }
 
 function recogFlag(
@@ -99,7 +99,7 @@ function recogFlag(
     if (env === FlagTy.SHORT) {
         const poi = tail.codePointAt(0)
 
-        if (dig) //TODO
+        if (digitMap) //TODO
         return [FlagTy.SHORT, 0 as Int]
     }
 
