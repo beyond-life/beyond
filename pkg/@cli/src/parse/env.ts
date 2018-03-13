@@ -27,9 +27,9 @@ export namespace FlagTy {
 }
 
 export class Bluepr {
-    flagTy :FlagTy.Uq | null = null
-    dataTy :Ty.Uq | null = null
-    numBase :Int = 10 as Int
+    readonly flagTy :FlagTy.Uq | null = null
+    readonly dataTy :Ty.Uq | null = null
+    readonly numBase :Int = 10 as Int
 }
 
 export default interface Env extends Bluepr {}
