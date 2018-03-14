@@ -17,7 +17,7 @@ import {
 
 // ~~~
 
-export default function tok(
+export default function tokenize(
     argsG :(string | Int[])[],
 ) {
     const args = areStr(argsG)

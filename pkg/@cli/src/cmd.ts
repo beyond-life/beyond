@@ -1,7 +1,12 @@
-import tok from "./parse/tok"
+import {log} from "@beyond-life/lowbar"
 
-process.stderr.write("\n> Reading following options:")
+import tokenize from "./parse/tok"
+
+// ~~~
+
+log(0o0)`READING`
 const av = process.argv.slice(2)
-for (let a of av) process.stdout.write(`\n* "${a}"`)
-process.stderr.write("\n===")
-tok(av)
+for (let a of av) log(0o7)`${a}`
+
+log(0o0)`TOKENIZE`
+tokenize(av)

@@ -7,6 +7,7 @@ import {
     Prop,
     isStr,
     till, range,
+    log,
 } from "@beyond-life/lowbar"
 
 import {Latin} from "../char-pois"
@@ -40,22 +41,17 @@ function recogKind<
     ) :[Int, Int] | [null, null] => {
         if (null !== l[0]) return l
 
-        console.log(
-            `\n$  Testing delim: <<${fromPoi(...curDelim)}>> (${kindI}: ${kinds[kindI].toString()})`
-        )
+        log(0o1)`Testing delim: ${fromPoi(...curDelim)} (${kindI})`
 
         const curLen = curDelim.length as Int
         const tailSlice = tail.slice(0, curLen)
 
-        console.log(tailSlice.map((e, i) => curDelim[i] === e))
         
         if (tailSlice.every((e, i) =>
             curDelim[i] === e
         )) return [kindI, curLen]
 
-        console.log(
-            `\n$  Failing at delim: #${curDelim.join(":")} != #${tailSlice.join(":")}`
-        )
+        log(0o1)`Failing at delim: ${curDelim.join(":")} != ${tailSlice.join(":")}`
 
         return [null, null]
     }, [null, null])
@@ -97,7 +93,7 @@ function isList(
     return isDataBegin && Latin.brac.bracket[0] === tail[0]
 }
 
-function findEq(
+function findEqSign(
     tail :Int[],
 ) :Int | null {
     const {equal} = Latin.sign
@@ -105,6 +101,26 @@ function findEq(
     return tail.includes(equal[0])
         ? tail.indexOf(equal[0]) as Int
         : null
+}
+
+export function parseData(
+    tail :Int[],
+    env :Env,
+) :State {
+    log(0o7)`Switchin to data parser for: "${fromPoi(...tail)}" startin ${tail[0].toString(16)}`
+    
+    if (isList(tail, env)) {
+        const {flagKind} = env
+
+        log(0o7)`List recognized…`
+
+        return {
+            flagKind,
+            dataKind: Data.LIST,
+            content: [],
+            overflow: tail,
+        }
+    }
 }
 
 export function parse(
@@ -116,9 +132,7 @@ export function parse(
     const isDataEnv = env.flagKind && (!env.dataKind ||
           Data.LIST === env.dataKind)
 
-    if (isDataEnv) {
-        return //TODO
-    }
+    if (isDataEnv) return parseData(tail, env)
 
     const flagRecog = recogFlag(
         tail,
@@ -129,7 +143,7 @@ export function parse(
         const argStrip = tail.slice(flagRecog[1])
         const flagKind = flagRecog[0]
         const eqPos = assignableFlags.includes(flagKind)
-            ? findEq(argStrip)
+            ? findEqSign(argStrip)
             : null
         const [dataTy, content, overflow] = null === eqPos
             ? [Data.EMPTY, argStrip, []]
@@ -140,9 +154,7 @@ export function parse(
             ]
         const contentStr = fromPoi(...content)
 
-        console.log(
-            `\n!  Flag recognized: "${contentStr}" <::> ${flagKind.toString()}`
-        )
+        log(0o5)`Flag recognized: "${contentStr}" <::> ${flagKind}`
 
         return {
             flagKind,
@@ -151,19 +163,6 @@ export function parse(
         }
     }
 
-    if (isList(tail, env)) {
-        const {flagKind} = env
-
-        console.log("\n!  List recognized…")
-
-        return {
-            flagKind,
-            dataKind: Data.LIST,
-            content: [],
-            overflow: tail,
-        }
-    }
-
-    console.log("\n!  No flag or list recognized…")
+    log(0o3)`Nothing recognized…`
     // TODO
 }
