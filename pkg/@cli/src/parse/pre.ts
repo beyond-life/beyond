@@ -12,18 +12,10 @@ import {
 import {Latin} from "../char-pois"
 
 import {
-    Data,
-    Ty,
-} from "../schema/data"
-import {
-    AUTOM,
-    Flag,
-    SyxForm,
-} from "../schema/flag"
-import {Cmd} from "../schema/cmd"
+    Data, Flag,
+} from "./kind"
 
 import {
-    FlagTy,
     Env,
     State,
 } from "./env"
@@ -73,25 +65,25 @@ function recogKind<
         : null
 }
 
-const assignables :FlagTy.Uq[] = [
-    FlagTy.SHORT,
-    FlagTy.LONG,
+const assignables :Flag.Uq[] = [
+    Flag.SHORT,
+    Flag.LONG,
 ]
 
 function recogFlag(
     tail :Int[],
     env :Env,
-) :[FlagTy.Uq, Int] | null {
+) :[Flag.Uq, Int] | null {
     const {minus} = Latin.sign
     const dashDash = new Array(2).fill(minus[0])
     const kindRecog = recogKind(tail, [
         [minus[0]],
         dashDash,
     ], assignables)
-    const isLong = kindRecog && FlagTy.LONG === kindRecog[0]
+    const isLong = kindRecog && Flag.LONG === kindRecog[0]
 
     if (isLong && !tail.slice(kindRecog![1]).length)
-        return [FlagTy.DASH_DASH, 2 as Int]
+        return [Flag.DASH_DASH, 2 as Int]
 
     return kindRecog
 }
@@ -135,9 +127,10 @@ export function parse(
             dataTy: null,
         }
         const eqPos = findEq(argStrip, findEnv)
-        const [content, overflow] = null === eqPos
-            ? [argStrip, null]
+        const [dataTy, content, overflow] = null === eqPos
+            ? [Data.EMPTY, argStrip, []]
             : [
+                null,
                 argStrip.slice(0, eqPos),
                 argStrip.slice(eqPos as number + 1),
             ]
@@ -161,7 +154,7 @@ export function parse(
 
         return {
             flagTy,
-            dataTy: Ty.LIST,
+            dataTy: Data.LIST,
             content: [],
             overflow: tail,
         }
