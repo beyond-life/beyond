@@ -107,12 +107,12 @@ export function parseData(
     tail :Int[],
     env :Env,
 ) :State {
-    log(0o7)`Switchin to data parser for: "${fromPoi(...tail)}" startin ${tail[0].toString(16)}`
+    log(0o5)`Switchin to data parser for: "${fromPoi(...tail)}" startin ${tail[0].toString(16)}`
     
     if (isList(tail, env)) {
         const {flagKind} = env
 
-        log(0o7)`List recognized…`
+        log(0o3)`List recognized…`
 
         return {
             flagKind,
