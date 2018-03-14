@@ -9,6 +9,8 @@ import {
     till, range,
 } from "@beyond-life/lowbar"
 
+import {Latin} from "../char-pois"
+
 import {
     Data,
     Ty,
@@ -67,17 +69,18 @@ function recogKind<
 function recogFlag(
     tail :string,
     env :Env,
-    {[Flag.SY_FLAG]: flagDelims} :Delim.Inter,
 ) :[FlagTy.Uq, Int] | null {
     if (env.flagTy === FlagTy.SHORT) {
         const poi = tail.codePointAt(0)
 
-        if (digitMap) //TODOO
         return [FlagTy.SHORT, 0 as Int]
     }
 
-    const kindRecog = recogKind(tail, flagDelims, [
-        FlagTy.DASH_DASH,
+    const {minus} = Latin.sign
+    const kindRecog = recogKind(tail, [
+        [minus[0]],
+        ([] as Int[]).fill(minus[0], 0, 2),
+    ], [
         FlagTy.SHORT,
         FlagTy.LONG,
     ])
@@ -88,14 +91,12 @@ function recogFlag(
 function recogData(
     tail :string,
     env :Env,
-    {[Data.SY_DATA]: dataDelims} :Delim.Inter,
 ) {
 
 }
 
 export default function preparse(
     args :string[],
-    delims :Delim.Inter = new Delim.Bluepr,
 ) {
     const argStr = args.join("\n")
     const env = new EnvBluepr()
@@ -103,7 +104,6 @@ export default function preparse(
     const flagRecog = recogFlag(
         argStr,
         env,
-        delims,
     )
 
     if (null === flagRecog) {
@@ -112,7 +112,6 @@ export default function preparse(
         const dataRecog = recogData(
             argStr,
             env,
-            delims,
         )
     } else {
         console.log(
