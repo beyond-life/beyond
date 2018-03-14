@@ -116,11 +116,12 @@ function findEq(
     return tail.indexOf(equal[0]) as Int
 }
 
-export default function preparse(
-    arg :Int[],
-) {
-    const env = new EnvBluepr()
+export type State = [Env, Int[]]
 
+export function parse(
+    arg :Int[],
+    env :Env,
+) :State {
     const flagRecog = recogFlag(
         arg,
         env,
