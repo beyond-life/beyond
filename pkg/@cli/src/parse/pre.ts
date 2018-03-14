@@ -32,7 +32,7 @@ import {
 
 function recogKind<
       Kind extends symbol>(
-    tail :string,
+    tail :Int[],
     delims :Int[][],
     kinds :Kind[],
 ) :[Kind, Int] | null {
@@ -55,27 +55,23 @@ function recogKind<
         }
 
         console.log("\n$  Testing delim: <<" + curDelim + ">>")
-        if (!tail.startsWith(fromPoi(...curDelim)))
-            return [null, null]
 
         const curLen = curDelim.length as Int
 
-        return [kindI, curLen]
+        if (tail.slice(0, curLen).every((e, i) =>
+            curDelim[i] === e
+        )) return [kindI, curLen]
+
+        return [null, null]
     }, [null, null])
 
     return i && len && [kinds[i], len]
 }
 
 function recogFlag(
-    tail :string,
+    tail :Int[],
     env :Env,
 ) :[FlagTy.Uq, Int] | null {
-    if (env.flagTy === FlagTy.SHORT) {
-        const poi = tail.codePointAt(0)
-
-        return [FlagTy.SHORT, 0 as Int]
-    }
-
     const {minus} = Latin.sign
     const kindRecog = recogKind(tail, [
         [minus[0]],
@@ -89,30 +85,26 @@ function recogFlag(
 }
 
 function recogData(
-    tail :string,
+    tail :Int[],
     env :Env,
 ) {
 
 }
 
 export default function preparse(
-    args :string[],
+    arg :Int[],
 ) {
-    const argStr = args.join("\n")
     const env = new EnvBluepr()
 
     const flagRecog = recogFlag(
-        argStr,
+        arg,
         env,
     )
 
     if (null === flagRecog) {
         console.log("\n!  No flag recognized…")
 
-        const dataRecog = recogData(
-            argStr,
-            env,
-        )
+        const dataRecog = recogData(arg, env)
     } else {
         console.log(
             `\n!  Flag recognized: ${flagRecog[0]}`

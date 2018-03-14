@@ -6,9 +6,11 @@ import {
 
 import {Latin} from "../char-pois"
 
+import preparse from "./pre"
+
 // ~~~
 
-export default function unesc(
+export default function tok(
     argsG :(string | Int[])[],
 ) {
     const args = areStr(argsG)
@@ -18,4 +20,6 @@ export default function unesc(
             )
         )
         : argsG as Int[][]
+
+    args.map(preparse)
 }
