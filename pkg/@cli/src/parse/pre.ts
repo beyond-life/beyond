@@ -65,7 +65,7 @@ function recogKind<
         : null
 }
 
-const assignables :Flag.Uq[] = [
+const assignableFlags :Flag.Uq[] = [
     Flag.SHORT,
     Flag.LONG,
 ]
@@ -79,7 +79,7 @@ function recogFlag(
     const kindRecog = recogKind(tail, [
         [minus[0]],
         dashDash,
-    ], assignables)
+    ], assignableFlags)
     const isLong = kindRecog && Flag.LONG === kindRecog[0]
 
     if (isLong && !tail.slice(kindRecog![1]).length)
@@ -90,30 +90,36 @@ function recogFlag(
 
 function isList(
     tail :Int[],
-    {flagTy, dataTy} :Env,
+    {flagKind, dataKind} :Env,
 ) :boolean {
-    const isDataBegin = assignables.includes(flagTy!) && null === dataTy
+    const isDataBegin = assignableFlags.includes(flagKind!) && null === dataKind
 
     return isDataBegin && Latin.brac.bracket[0] === tail[0]
 }
 
 function findEq(
     tail :Int[],
-    env :Env,
 ) :Int | null {
     const {equal} = Latin.sign
-    const isAssignable = assignables.includes(env.flagTy!)
 
-    if (!isAssignable || !tail.includes(equal[0]))
-        return null
-
-    return tail.indexOf(equal[0]) as Int
+    return tail.includes(equal[0])
+        ? tail.indexOf(equal[0]) as Int
+        : null
 }
 
 export function parse(
     tail :Int[],
     env :Env,
 ) :State {
+    // TODO Handeling overflow
+
+    const isDataEnv = env.flagKind && (!env.dataKind ||
+          Data.LIST === env.dataKind)
+
+    if (isDataEnv) {
+        return //TODO
+    }
+
     const flagRecog = recogFlag(
         tail,
         env,
@@ -121,12 +127,10 @@ export function parse(
 
     if (null !== flagRecog) {
         const argStrip = tail.slice(flagRecog[1])
-        const flagTy = flagRecog[0]
-        const findEnv = {
-            flagTy,
-            dataTy: null,
-        }
-        const eqPos = findEq(argStrip, findEnv)
+        const flagKind = flagRecog[0]
+        const eqPos = assignableFlags.includes(flagKind)
+            ? findEq(argStrip)
+            : null
         const [dataTy, content, overflow] = null === eqPos
             ? [Data.EMPTY, argStrip, []]
             : [
@@ -137,24 +141,24 @@ export function parse(
         const contentStr = fromPoi(...content)
 
         console.log(
-            `\n!  Flag recognized: "${contentStr}" <::> ${flagTy.toString()}`
+            `\n!  Flag recognized: "${contentStr}" <::> ${flagKind.toString()}`
         )
 
         return {
-            flagTy,
-            dataTy: null,
+            flagKind,
+            dataKind: null,
             content, overflow,
         }
     }
 
     if (isList(tail, env)) {
-        const flagTy = env.flagTy
+        const {flagKind} = env
 
         console.log("\n!  List recognized…")
 
         return {
-            flagTy,
-            dataTy: Data.LIST,
+            flagKind,
+            dataKind: Data.LIST,
             content: [],
             overflow: tail,
         }

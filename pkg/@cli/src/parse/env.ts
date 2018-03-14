@@ -11,8 +11,8 @@ import {
 export interface Env extends Env.Bluepr {}
 export namespace Env {
     export class Bluepr {
-        readonly flagTy :Flag.Uq | null = null
-        readonly dataTy :Data.Uq | null = null
+        readonly flagKind :Flag.Uq | null = null
+        readonly dataKind :Data.Uq | null = null
     }
 }
 export default Env
