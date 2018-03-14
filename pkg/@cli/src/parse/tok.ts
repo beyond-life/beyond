@@ -18,10 +18,4 @@ export default function unesc(
             )
         )
         : argsG as Int[][]
-    
-    const bkSlashIs = args.filter((e) =>
-        Latin.sign.slash[1] === e
-    ).map((e, i) =>
-        i as Int
-    )
 }

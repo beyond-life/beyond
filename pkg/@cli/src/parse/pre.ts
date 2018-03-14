@@ -1,3 +1,7 @@
+const fromPoi = String.fromCodePoint
+
+// @@@
+
 import {
     Int, isInt,
     Prop,
@@ -24,56 +28,40 @@ import {
 
 // ~~~
 
-export namespace Delim {
-    export class Bluepr {
-        ;[Flag.SY_FLAG] :Stripple = ["--\n", "-", "--"]
-        ;[Data.SY_DATA] :Stripple = ["=", "", ","]
-    }
-
-    export interface Inter extends Bluepr {}
-}
-
-export type Stripple = [
-      string, //init sequence
-      string, //short syntax form
-      string] //long syntax form
-
 function recogKind<
       Kind extends symbol>(
     tail :string,
-    delim3 :Stripple,
+    delims :Int[][],
     kinds :Kind[],
 ) :[Kind, Int] | null {
-    const dLengths = delim3.map((e, i) =>
-        [i, e, e.length] as [Int, string, Int]
+    const dLengths = delims.map((e, i) =>
+        [i, e] as [Int, Int[]]
     ).sort((l, r) =>
-        r[2] - l[2]
+        r[1].length - l[1].length
     )
     const [i, len] = dLengths.reduce((
         l :[Int, Int] | [null, null],
-        [kindI, curDelim, curLen] :[Int, string, Int],
+        [kindI, curDelim] :[Int, Int[]],
         i :number,
     ) :[Int, Int] | [null, null] => {
         if (null !== l[0]) {
-            const matDelim = delim3[l[0]!]
+            const matDelim = delims[l[0]!]
             console.log(
-                `\n$  Matched delim: <<${matDelim}>> (${l[0]})`,
+                `\n$  Matched delim: <<${fromPoi(...matDelim)}>> (${l[0]})`,
             )
             return l
         }
 
         console.log("\n$  Testing delim: <<" + curDelim + ">>")
-        if (!tail.startsWith(curDelim)) return [null, null]
+        if (!tail.startsWith(fromPoi(...curDelim)))
+            return [null, null]
 
-        return [kindI, curLen as Int]
+        const curLen = curDelim.length as Int
+
+        return [kindI, curLen]
     }, [null, null])
 
     return i && len && [kinds[i], len]
-}
-
-const digitMap = {
-    d: till(range(0x30 as Int), 0x39 as Int),
-    x: till(range(0x41 as Int), 0x46 as Int),
 }
 
 function recogFlag(
