@@ -46,26 +46,31 @@ function recogKind<
         [kindI, curDelim] :[Int, Int[]],
         i :number,
     ) :[Int, Int] | [null, null] => {
-        if (null !== l[0]) {
-            const matDelim = delims[l[0]!]
-            console.log(
-                `\n$  Matched delim: <<${fromPoi(...matDelim)}>> (${l[0]})`,
-            )
-            return l
-        }
+        if (null !== l[0]) return l
 
-        console.log("\n$  Testing delim: <<" + curDelim + ">>")
+        console.log(
+            `\n$  Testing delim: <<${fromPoi(...curDelim)}>> (${kindI}: ${kinds[kindI].toString()})`
+        )
 
         const curLen = curDelim.length as Int
+        const tailSlice = tail.slice(0, curLen)
 
-        if (tail.slice(0, curLen).every((e, i) =>
+        console.log(tailSlice.map((e, i) => curDelim[i] === e))
+        
+        if (tailSlice.every((e, i) =>
             curDelim[i] === e
         )) return [kindI, curLen]
+
+        console.log(
+            `\n$  Failing at delim: #${curDelim.join(":")} != #${tailSlice.join(":")}`
+        )
 
         return [null, null]
     }, [null, null])
 
-    return i && len && [kinds[i], len]
+    return null !== i && null !== len
+        ? [kinds[i], len]
+        : null
 }
 
 const assignables :FlagTy.Uq[] = [
@@ -78,7 +83,7 @@ function recogFlag(
     env :Env,
 ) :[FlagTy.Uq, Int] | null {
     const {minus} = Latin.sign
-    const dashDash = ([] as Int[]).fill(minus[0], 0, 2)
+    const dashDash = new Array(2).fill(minus[0])
     const kindRecog = recogKind(tail, [
         [minus[0]],
         dashDash,
@@ -138,8 +143,9 @@ export default function preparse(
             : flagArg.slice(0, eqPos)
         const flagStr = fromPoi(...flagName)
 
+        console.log(assignables)
         console.log(
-            `\n!  Flag recognized: "${flagStr}" <::> ${flagTy}`
+            `\n!  Flag recognized: "${flagStr}" <::> ${flagTy.toString()}`
         )
     }
 }
