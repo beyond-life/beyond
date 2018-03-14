@@ -16,19 +16,22 @@ export namespace Data {
 // Data Type:
 export namespace Ty {
     export const STR :unique symbol =
-        Symbol("<string flag>")
+        Symbol("<string data>")
     export const NUM : unique symbol =
-        Symbol("<numeric flag>")
+        Symbol("<numeric data>")
     export const NUM_INT :unique symbol =
-        Symbol("<integer-numberic flag>")
+        Symbol("<integer-numberic data>")
     export const BOOL :unique symbol =
-        Symbol("<boolean flag>")
+        Symbol("<boolean data>")
+    export const LIST :unique symbol =
+        Symbol("<data list>")
         
     export type Uq = never
         | typeof STR
         | typeof NUM
         | typeof NUM_INT
         | typeof BOOL
+        | typeof LIST
 
     export type NativeVal = string | boolean | number
     export interface Ty2Native {

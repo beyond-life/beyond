@@ -119,37 +119,54 @@ function findEq(
 }
 
 export function parse(
-    arg :Int[],
+    tail :Int[],
     env :Env,
 ) :State {
     const flagRecog = recogFlag(
-        arg,
+        tail,
         env,
     )
 
-    if (null === flagRecog) {
-        console.log("\n!  No flag recognized…")
-
-        const isListArg = isList(arg, env)
-    } else {
-        const flagArg = arg.slice(flagRecog[1])
+    if (null !== flagRecog) {
+        const argStrip = tail.slice(flagRecog[1])
         const flagTy = flagRecog[0]
         const findEnv = {
             flagTy,
             dataTy: null,
         }
-        const eqPos = findEq(flagArg, findEnv)
+        const eqPos = findEq(argStrip, findEnv)
         const [content, overflow] = null === eqPos
-            ? [flagArg, null]
+            ? [argStrip, null]
             : [
-                flagArg.slice(0, eqPos),
-                flagArg.slice(eqPos as number + 1),
+                argStrip.slice(0, eqPos),
+                argStrip.slice(eqPos as number + 1),
             ]
-        const flagStr = fromPoi(...content)
+        const contentStr = fromPoi(...content)
 
-        console.log(assignables)
         console.log(
-            `\n!  Flag recognized: "${flagStr}" <::> ${flagTy.toString()}`
+            `\n!  Flag recognized: "${contentStr}" <::> ${flagTy.toString()}`
         )
+
+        return {
+            flagTy,
+            dataTy: null,
+            content, overflow,
+        }
     }
+
+    if (isList(tail, env)) {
+        const flagTy = env.flagTy
+
+        console.log("\n!  List recognized…")
+
+        return {
+            flagTy,
+            dataTy: Ty.LIST,
+            content: [],
+            overflow: tail,
+        }
+    }
+
+    console.log("\n!  No flag or list recognized…")
+    // TODO
 }
