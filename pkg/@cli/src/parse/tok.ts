@@ -7,12 +7,11 @@ import {
 import {Latin} from "../char-pois"
 
 import {
-    Bluepr as EnvBluepr,
-    default as Env,
+    State,
+    Env,
 } from "./env"
 
 import {
-    State,
     parse,
 } from "./pre"
 
@@ -29,10 +28,11 @@ export default function tok(
         )
         : argsG as Int[][]
     const toks = args.reduce(
-        (l :State[], r :Int[]) :State[] => [...l, parse(r, l[l.length-1][0])],
-        [[
-            new EnvBluepr(),
-            [] as Int[],
-        ]] as State[],
+        (l :State[], r :Int[]) :State[] =>
+            [
+                ...l,
+                parse(r, l[l.length-1])
+            ],
+        [new State.Bluepr()] as State[],
     )
 }

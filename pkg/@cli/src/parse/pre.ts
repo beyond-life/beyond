@@ -24,8 +24,8 @@ import {Cmd} from "../schema/cmd"
 
 import {
     FlagTy,
-    Bluepr as EnvBluepr,
-    default as Env,
+    Env,
+    State,
 } from "./env"
 
 // ~~~
@@ -96,11 +96,13 @@ function recogFlag(
     return kindRecog
 }
 
-function recogData(
+function isList(
     tail :Int[],
-    env :Env,
-) {
+    {flagTy, dataTy} :Env,
+) :boolean {
+    const isDataBegin = assignables.includes(flagTy!) && null === dataTy
 
+    return isDataBegin && Latin.brac.bracket[0] === tail[0]
 }
 
 function findEq(
@@ -116,8 +118,6 @@ function findEq(
     return tail.indexOf(equal[0]) as Int
 }
 
-export type State = [Env, Int[]]
-
 export function parse(
     arg :Int[],
     env :Env,
@@ -130,7 +130,7 @@ export function parse(
     if (null === flagRecog) {
         console.log("\n!  No flag recognized…")
 
-        const dataRecog = recogData(arg, env)
+        const isListArg = isList(arg, env)
     } else {
         const flagArg = arg.slice(flagRecog[1])
         const flagTy = flagRecog[0]
@@ -139,10 +139,13 @@ export function parse(
             dataTy: null,
         }
         const eqPos = findEq(flagArg, findEnv)
-        const flagName = null === eqPos
-            ? flagArg
-            : flagArg.slice(0, eqPos)
-        const flagStr = fromPoi(...flagName)
+        const [content, overflow] = null === eqPos
+            ? [flagArg, null]
+            : [
+                flagArg.slice(0, eqPos),
+                flagArg.slice(eqPos as number + 1),
+            ]
+        const flagStr = fromPoi(...content)
 
         console.log(assignables)
         console.log(

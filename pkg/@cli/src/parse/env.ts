@@ -26,9 +26,20 @@ export namespace FlagTy {
         | typeof DASH_DASH
 }
 
-export class Bluepr {
-    readonly flagTy :FlagTy.Uq | null = null
-    readonly dataTy :Ty.Uq | null = null
-}
 
-export default interface Env extends Bluepr {}
+export interface Env extends Env.Bluepr {}
+export namespace Env {
+    export class Bluepr {
+        readonly flagTy :FlagTy.Uq | null = null
+        readonly dataTy :Ty.Uq | null = null
+    }
+}
+export default Env
+
+export interface State extends State.Bluepr {}
+export namespace State {
+    export class Bluepr extends Env.Bluepr {
+        readonly content = [] as Int[]
+        readonly overflow :Int[] | null = null
+    }
+}
