@@ -73,13 +73,18 @@ function recogFlag(
     env :Env,
 ) :[FlagTy.Uq, Int] | null {
     const {minus} = Latin.sign
+    const dashDash = ([] as Int[]).fill(minus[0], 0, 2)
     const kindRecog = recogKind(tail, [
         [minus[0]],
-        ([] as Int[]).fill(minus[0], 0, 2),
+        dashDash,
     ], [
         FlagTy.SHORT,
         FlagTy.LONG,
     ])
+    const isLong = kindRecog && FlagTy.LONG === kindRecog[0]
+
+    if (isLong && !tail.slice(kindRecog![1]).length)
+        return [FlagTy.DASH_DASH, 2 as Int]
 
     return kindRecog
 }
