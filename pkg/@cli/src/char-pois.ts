@@ -32,8 +32,6 @@ export namespace Latin {
             [0x3a] as Int[],
         semicolon:
             [0x3b] as Int[],
-        equal:
-            [0x3d] as Int[],
         query: // `?`
             [0x3f] as Int[],
     }
@@ -54,6 +52,8 @@ export namespace Latin {
             [0x2f, 0x5c] as Int[],
         angle:
             [0x3c, 0x3e] as Int[],
+        equal:
+            [0x3d] as Int[],
         // ---
         at:
             [0x40] as Int[],

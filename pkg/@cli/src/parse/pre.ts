@@ -68,6 +68,11 @@ function recogKind<
     return i && len && [kinds[i], len]
 }
 
+const assignables :FlagTy.Uq[] = [
+    FlagTy.SHORT,
+    FlagTy.LONG,
+]
+
 function recogFlag(
     tail :Int[],
     env :Env,
@@ -77,10 +82,7 @@ function recogFlag(
     const kindRecog = recogKind(tail, [
         [minus[0]],
         dashDash,
-    ], [
-        FlagTy.SHORT,
-        FlagTy.LONG,
-    ])
+    ], assignables)
     const isLong = kindRecog && FlagTy.LONG === kindRecog[0]
 
     if (isLong && !tail.slice(kindRecog![1]).length)
@@ -94,6 +96,19 @@ function recogData(
     env :Env,
 ) {
 
+}
+
+function findEq(
+    tail :Int[],
+    env :Env,
+) :Int | null {
+    const {equal} = Latin.sign
+    const isAssignable = assignables.includes(env.flagTy!)
+
+    if (!isAssignable || !tail.includes(equal[0]))
+        return null
+
+    return tail.indexOf(equal[0]) as Int
 }
 
 export default function preparse(
@@ -111,8 +126,20 @@ export default function preparse(
 
         const dataRecog = recogData(arg, env)
     } else {
+        const flagArg = arg.slice(flagRecog[1])
+        const flagTy = flagRecog[0]
+        const findEnv = {
+            flagTy,
+            dataTy: null,
+        }
+        const eqPos = findEq(flagArg, findEnv)
+        const flagName = null === eqPos
+            ? flagArg
+            : flagArg.slice(0, eqPos)
+        const flagStr = fromPoi(...flagName)
+
         console.log(
-            `\n!  Flag recognized: ${flagRecog[0]}`
+            `\n!  Flag recognized: "${flagStr}" <::> ${flagTy}`
         )
     }
 }
