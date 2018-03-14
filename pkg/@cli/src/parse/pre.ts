@@ -1,11 +1,7 @@
-const fromPoi = String.fromCodePoint
-
-// @@@
-
 import {
     Int, isInt,
     Prop,
-    isStr,
+    isStr, fromPoi,
     till, range,
     log,
 } from "@beyond-life/lowbar"
@@ -107,7 +103,7 @@ export function parseData(
     tail :Int[],
     env :Env,
 ) :State {
-    log(0o5)`Switchin to data parser for: "${fromPoi(...tail)}" startin ${tail[0].toString(16)}`
+    log(0o3)`Switchin to data parser for: ${fromPoi(...tail)}`
     
     if (isList(tail, env)) {
         const {flagKind} = env
@@ -145,7 +141,7 @@ export function parse(
         const eqPos = assignableFlags.includes(flagKind)
             ? findEqSign(argStrip)
             : null
-        const [dataTy, content, overflow] = null === eqPos
+        const [dataKind, content, overflow] = null === eqPos
             ? [Data.EMPTY, argStrip, []]
             : [
                 null,
@@ -154,11 +150,11 @@ export function parse(
             ]
         const contentStr = fromPoi(...content)
 
-        log(0o5)`Flag recognized: "${contentStr}" <::> ${flagKind}`
+        log(0o3)`Flag recognized: ${contentStr} as ${flagKind}`
 
         return {
             flagKind,
-            dataKind: null,
+            dataKind,
             content, overflow,
         }
     }

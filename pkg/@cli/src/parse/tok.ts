@@ -1,7 +1,8 @@
 import {
     Int, isInt,
-    isStr, areStr,
+    isStr, areStr, fromPoi,
     till, range,
+    log,
 } from "@beyond-life/lowbar"
 
 import {Latin} from "../char-pois"
@@ -17,6 +18,19 @@ import {
 
 // ~~~
 
+export function *flowOver(
+    tail :Int[],
+    state :State,
+) {
+    let [env, overflow] = [state, tail]
+    do {
+        log(0o5)``
+        env = parse(overflow, env)
+        yield env
+        ;({overflow} = env)
+    } while (overflow.length)
+}
+
 export default function tokenize(
     argsG :(string | Int[])[],
 ) {
@@ -31,7 +45,7 @@ export default function tokenize(
         (l :State[], r :Int[]) :State[] =>
             [
                 ...l,
-                parse(r, l[l.length-1])
+                ...flowOver(r, l[l.length-1])
             ],
         [new State.Bluepr()] as State[],
     )
