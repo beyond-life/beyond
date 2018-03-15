@@ -123,8 +123,6 @@ export function parse(
     tail :Int[],
     env :Env,
 ) :State {
-    // TODO Handeling overflow
-
     const isDataEnv = env.flagKind && (!env.dataKind ||
           Data.LIST === env.dataKind)
 

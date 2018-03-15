@@ -1,6 +1,7 @@
 import {
     Int, isInt,
     isStr, areStr, fromPoi,
+    proto,
     till, range,
     log,
 } from "@beyond-life/lowbar"
@@ -20,14 +21,20 @@ import {
 
 export function *flowOver(
     tail :Int[],
-    state :State,
+    state1st :State,
 ) {
-    let [env, overflow] = [state, tail]
+    let [state, overflow] = [state1st, tail]
     do {
-        log(0o5)``
-        env = parse(overflow, env)
-        yield env
-        ;({overflow} = env)
+        const {flagKind, dataKind} = state
+        const env = {
+            flagKind, dataKind,
+        }
+        log(0o5)`= Parsin ${overflow} in ${env}`
+
+        state = parse(overflow, env)
+        yield state
+
+        ;({overflow} = state)
     } while (overflow.length)
 }
 
