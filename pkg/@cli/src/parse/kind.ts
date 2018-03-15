@@ -28,11 +28,9 @@ export namespace Data {
 export namespace Flag {
     export const {SHORT, LONG} = SyxForm
     export const MAIN = FlagSchm.SY_MAIN
-    export const {DASH_DASH} = Cmd
 
     export type Uq = never
         | typeof SHORT
         | typeof LONG
         | typeof MAIN
-        | typeof DASH_DASH
 }

@@ -1,6 +1,6 @@
 import {
     Int, isInt,
-    Prop,
+    Prop, getArrIndex,
     isStr, fromPoi,
     till, range,
     log,
@@ -74,9 +74,6 @@ function recogFlag(
     ], assignableFlags)
     const isLong = kindRecog && Flag.LONG === kindRecog[0]
 
-    if (isLong && !tail.slice(kindRecog![1]).length)
-        return [Flag.DASH_DASH, 2 as Int]
-
     return kindRecog
 }
 
@@ -89,33 +86,32 @@ function isList(
     return isDataBegin && Latin.brac.bracket[0] === tail[0]
 }
 
-function findEqSign(
-    tail :Int[],
-) :Int | null {
-    const {equal} = Latin.sign
-
-    return tail.includes(equal[0])
-        ? tail.indexOf(equal[0]) as Int
-        : null
-}
-
 export function parseData(
     tail :Int[],
     env :Env,
 ) :State {
     log(0o3)`Switchin to data parser for: ${fromPoi(...tail)}`
     
-    if (isList(tail, env)) {
-        const {flagKind} = env
+    const {flagKind} = env
 
+    if (isList(tail, env)) {
         log(0o3)`List recognized…`
 
         return {
             flagKind,
             dataKind: Data.LIST,
             content: [],
-            overflow: tail,
+            overflow: tail.slice(1),
         }
+    }
+    
+    log(0o3)`Raw recognized: ${fromPoi(...tail)}`
+
+    return {
+        flagKind,
+        dataKind: Data.RAW,
+        content: tail,
+        overflow: [],
     }
 }
 
@@ -137,7 +133,7 @@ export function parse(
         const argStrip = tail.slice(flagRecog[1])
         const flagKind = flagRecog[0]
         const eqPos = assignableFlags.includes(flagKind)
-            ? findEqSign(argStrip)
+            ? getArrIndex(argStrip, Latin.sign.equal[0])
             : null
         const [dataKind, content, overflow] = null === eqPos
             ? [Data.EMPTY, argStrip, []]
@@ -157,6 +153,7 @@ export function parse(
         }
     }
 
-    log(0o3)`Nothing recognized…`
-    // TODO
+    log(0o3)`No flag recognized—Parsin as main data…`
+
+    return parseData(tail, env)
 }
