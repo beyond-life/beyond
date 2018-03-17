@@ -4,6 +4,7 @@ import {
     isStr, fromPoi,
     till, range,
     log,
+    proto,
 } from "@beyond-life/lowbar"
 
 import {Latin} from "../char-pois"
@@ -86,6 +87,45 @@ function isList(
     return isDataBegin && Latin.brac.bracket[0] === tail[0]
 }
 
+export function parseFlagPrefix(
+    overflow :Int[],
+    {flagKind} :Env,
+) :State {
+    log(0o3)`Flag recognized: ${fromPoi(...overflow)}`
+
+    return {
+        flagKind,
+        dataKind: null,
+        content: [],
+        overflow,
+    }
+}
+
+export function parseFlag(
+    tail :Int[],
+    {flagKind} :Env,
+) :State {
+    const eqPos = assignableFlags.includes(flagKind!)
+        ? getArrIndex(tail, Latin.sign.equal[0])
+        : null
+    const [dataKind, content, overflow] = null === eqPos
+        ? [Data.EMPTY, tail, []]
+        : [
+            null,
+            tail.slice(0, eqPos),
+            tail.slice(eqPos as number + 1),
+        ]
+    const contentStr = fromPoi(...content)
+
+    log(0o3)`Flag recognized: ${contentStr} as ${flagKind}`
+
+    return {
+        flagKind,
+        dataKind,
+        content, overflow,
+    }
+}
+
 export function parseData(
     tail :Int[],
     env :Env,
@@ -119,41 +159,24 @@ export function parse(
     tail :Int[],
     env :Env,
 ) :State {
-    const isDataEnv = env.flagKind && (!env.dataKind ||
+    const isFlagEnv = env.flagKind && (!env.dataKind ||
           Data.LIST === env.dataKind)
 
-    if (isDataEnv) return parseData(tail, env)
+    if (isFlagEnv) return (content.length
+        ? parseData
+        : parseFlag
+    )(tail, env)
 
-    const flagRecog = recogFlag(
-        tail,
-        env,
-    )
+    const flagRecog = recogFlag(tail, env)
 
     if (null !== flagRecog) {
-        const argStrip = tail.slice(flagRecog[1])
-        const flagKind = flagRecog[0]
-        const eqPos = assignableFlags.includes(flagKind)
-            ? getArrIndex(argStrip, Latin.sign.equal[0])
-            : null
-        const [dataKind, content, overflow] = null === eqPos
-            ? [Data.EMPTY, argStrip, []]
-            : [
-                null,
-                argStrip.slice(0, eqPos),
-                argStrip.slice(eqPos as number + 1),
-            ]
-        const contentStr = fromPoi(...content)
+        const [flagKind, shift] = flagRecog
+        const env = proto({flagKind}, Env.Bluepr)
 
-        log(0o3)`Flag recognized: ${contentStr} as ${flagKind}`
-
-        return {
-            flagKind,
-            dataKind,
-            content, overflow,
-        }
+        return parseFlagPrefix(tail.slice(shift), env)
     }
 
-    log(0o3)`No flag recognized—Parsin as main data…`
+    }
 
     return parseData(tail, env)
 }
