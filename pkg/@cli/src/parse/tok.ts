@@ -30,7 +30,7 @@ export function *flowOver(
     do {
         const {flagKind, dataKind, flagged} = state
         const env = {flagKind, dataKind, flagged}
-        log(0o5)`= Parsin ${overflow} in {${flagKind}:${dataKind}}`
+        log(0o5)`= Parsin ${fromPoi(...overflow)} (${overflow}) in {${flagKind}:${dataKind}}`
 
         state = parse(overflow, env)
         yield state

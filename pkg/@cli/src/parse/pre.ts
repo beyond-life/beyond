@@ -20,7 +20,7 @@ import {
 
 // ~~~
 
-function recogKind<
+function recogKinds<
       Kind extends symbol>(
     tail :Int[],
     delims :Int[][],
@@ -71,7 +71,7 @@ function recogFlagKind(
 ) :[Flag.Uq, Int] | null {
     const {minus} = Latin.sign
     const dashDash = new Array(2).fill(minus[0])
-    const kindRecog = recogKind(tail, [
+    const kindRecog = recogKinds(tail, [
         [minus[0]],
         dashDash,
     ], assignableFlags)
@@ -136,18 +136,14 @@ export function parseDataPrefix(
         [0 as Int],
         [brac.bracket[0]],
         [sign.equal[0]],
-        [sign.plus[0]],
-        [sign.minus[0]],
         ...digit.arabic.map((dig)=> [dig])
     ]
     const digitKinds :(typeof Data.DIGIT)[] =
         Array(digit.arabic.length).fill(Data.DIGIT)
-    const [dataKindG, shift] = recogKind(tail, dataSigns, [
-        Flag.MAIN,
+    const [dataKindG, shift] = recogKinds(tail, dataSigns, [
+        Data.EMPTY,
         Data.LIST,
         Data.RAW,
-        Data.NUM,
-        Data.NUM,
         ...digitKinds,
     ]) || [
         Data.EMPTY,
@@ -156,7 +152,8 @@ export function parseDataPrefix(
     const content = Data.LIST === dataKindG
         ? tail.slice(0, shift)
         : []
-    const [flagKind, dataKind] = Flag.MAIN === dataKindG
+    const [flagKind, dataKind] = Data.EMPTY === dataKindG
+          && shift
         ? [null, null]
         : [env.flagKind, dataKindG]
     
@@ -172,16 +169,45 @@ export function parseDataPrefix(
     }
 }
 
+export function parseData(
+    tail :Int[],
+    {flagKind, dataKind} :Env,
+) :State {
+    log(0o3)`Switchin to data content parser for: ${fromPoi(...tail)}`
+
+    const {bracket} = Latin.brac
+    const wordEnd = getArrIndex(tail, 0 as Int) || tail.length as Int
+    const isListEnd = Data.LIST === dataKind
+          && bracket[1] === tail[wordEnd - 1]
+    const shift = isListEnd
+        ? wordEnd - 1
+        : wordEnd
+
+    switch (dataKind) {
+        case Data.LIST: case Data.RAW: return {
+            flagKind,
+            flagged: true,
+            dataKind,
+            content: tail.slice(0, shift),
+            overflow: tail.slice(shift),
+        }
+        default: throw "Data kind currently unimplemented."
+    }
+}
+
 export function parse(
     tail :Int[],
     env :Env,
 ) :State {
-    const isFlagEnv = env.flagKind && !env.dataKind
+    const {flagKind, flagged, dataKind} = env
 
-    if (isFlagEnv) return (env.flagged
-        ? parseDataPrefix
-        : parseFlag
-    )(tail, env)
+    if (flagKind)
+        return ([null, Data.EMPTY].includes(dataKind)
+            ? flagged
+            ? parseDataPrefix
+            : parseFlag
+            : parseData
+        )(tail, env)
 
     const flagRecog = recogFlagKind(tail, env)
 
@@ -192,5 +218,11 @@ export function parse(
         return parseFlagPrefix(tail, shift, env)
     }
 
-    return parseDataPrefix(tail, env)
+    return {
+        flagKind: Flag.MAIN,
+        flagged: true,
+        dataKind: null,
+        overflow: tail,
+        content: [],
+    }
 }
