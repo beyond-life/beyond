@@ -38,7 +38,9 @@ function recogKind<
     ) :[Int, Int] | [null, null] => {
         if (null !== l[0]) return l
 
-        log(0o1)`Testing delim: ${fromPoi(...curDelim)} (${kindI})`
+        log(0o1)`Testing delim: ${fromPoi(...curDelim)} (${kindI}) at: ${
+            tail.slice(0, 4).map((e :Int)=> e.toString(16))
+        }`
 
         const curLen = curDelim.length as Int
         const tailSlice = tail.slice(0, curLen)
@@ -48,7 +50,7 @@ function recogKind<
             curDelim[i] === e
         )) return [kindI, curLen]
 
-        log(0o1)`Failing at delim: ${curDelim.join(":")} != ${tailSlice.join(":")}`
+        log(0o1)`Failing at delim…`
 
         return [null, null]
     }, [null, null])
@@ -98,19 +100,21 @@ export function parseFlag(
     tail :Int[],
     {flagKind} :Env,
 ) :State {
-    const eqPos = assignableFlags.includes(flagKind!)
+    const shift :Int | null = Flag.SHORT === flagKind && 0 as Int !== tail[0]
+        ? 1 as Int
+        : Flag.LONG === flagKind
         ? getArrIndex(tail, Latin.sign.equal[0])
         : null
-    const [dataKind, content, overflow] = null === eqPos
-        ? [Data.EMPTY, tail, []]
+    const [dataKind, content, overflow] = null === shift
+        ? [Data.RAW, [], tail]
         : [
             null,
-            tail.slice(0, eqPos),
-            tail.slice(eqPos as number + 1),
+            tail.slice(0, shift),
+            tail.slice(shift),
         ]
     const contentStr = fromPoi(...content)
 
-    log(0o3)`Flag recognized: ${contentStr} as ${flagKind}`
+    log(0o3)`Flag ${flagKind}:${dataKind} recognized: ${contentStr}`
 
     return {
         flagKind,
@@ -125,7 +129,7 @@ export function parseDataPrefix(
     tail :Int[],
     env :Env,
 ) :State {
-    log(0o3)`Switchin to data parser for: ${fromPoi(...tail)}`
+    log(0o3)`Switchin to data prefix parser for: ${fromPoi(...tail)}`
     
     const {brac, digit, sign} = Latin
     const dataSigns :Int[][] = [
