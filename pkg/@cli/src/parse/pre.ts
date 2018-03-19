@@ -63,7 +63,7 @@ const assignableFlags :Flag.Uq[] = [
     Flag.LONG,
 ]
 
-function recogFlag(
+function recogFlagKind(
     tail :Int[],
     env :Env,
 ) :[Flag.Uq, Int] | null {
@@ -76,15 +76,6 @@ function recogFlag(
     const isLong = kindRecog && Flag.LONG === kindRecog[0]
 
     return kindRecog
-}
-
-function isList(
-    tail :Int[],
-    {flagKind, dataKind} :Env,
-) :boolean {
-    const isDataBegin = assignableFlags.includes(flagKind!) && null === dataKind
-
-    return isDataBegin && Latin.brac.bracket[0] === tail[0]
 }
 
 export function parseFlagPrefix(
@@ -126,32 +117,39 @@ export function parseFlag(
     }
 }
 
-export function parseData(
+export function parseDataPrefix(
     tail :Int[],
     env :Env,
 ) :State {
     log(0o3)`Switchin to data parser for: ${fromPoi(...tail)}`
     
     const {flagKind} = env
+    const {brac, sign} = Latin
+    const [dataKind, shift] = recogKind(tail, [
+        [brac.bracket[0]],
+        [sign.equal[0]],
+        [sign.plus[0]],
+        [sign.minus[0]],
+    ], [
+        Data.LIST,
+        Data.RAW,
+        Data.NUM,
+        Data.NUM,
+    ]) || [
+        Data.CHAR,
+        0
+    ]
+    const content = Data.LIST === dataKind
+        ? tail.slice(0, shift)
+        : []
 
-    if (isList(tail, env)) {
-        log(0o3)`List recognized…`
-
-        return {
-            flagKind,
-            dataKind: Data.LIST,
-            content: [],
-            overflow: tail.slice(1),
-        }
-    }
-    
-    log(0o3)`Raw recognized: ${fromPoi(...tail)}`
+    log(0o3)`${dataKind} (${fromPoi(...content)}) recognized…`
 
     return {
         flagKind,
-        dataKind: Data.RAW,
-        content: tail,
-        overflow: [],
+        dataKind,
+        content,
+        overflow: tail.slice(shift),
     }
 }
 
@@ -163,11 +161,11 @@ export function parse(
           Data.LIST === env.dataKind)
 
     if (isFlagEnv) return (content.length
-        ? parseData
+        ? parseDataPrefix
         : parseFlag
     )(tail, env)
 
-    const flagRecog = recogFlag(tail, env)
+    const flagRecog = recogFlagKind(tail, env)
 
     if (null !== flagRecog) {
         const [flagKind, shift] = flagRecog
@@ -176,7 +174,5 @@ export function parse(
         return parseFlagPrefix(tail.slice(shift), env)
     }
 
-    }
-
-    return parseData(tail, env)
+    return parseDataPrefix(tail, env)
 }
