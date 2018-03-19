@@ -12,6 +12,8 @@ export interface Env extends Env.Bluepr {}
 export namespace Env {
     export class Bluepr {
         readonly flagKind :Flag.Uq | null = null
+        readonly flagged :boolean = false
+
         readonly dataKind :Data.Uq | null = null
     }
 }

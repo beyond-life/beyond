@@ -23,12 +23,13 @@ export function *flowOver(
     tail :Int[],
     state1st :State,
 ) {
-    let [state, overflow] = [state1st, tail]
+    let [state, overflow] = [
+        state1st,
+        [0 as Int, ...tail],
+    ]
     do {
-        const {flagKind, dataKind} = state
-        const env = {
-            flagKind, dataKind,
-        }
+        const {flagKind, dataKind, flagged} = state
+        const env = {flagKind, dataKind, flagged}
         log(0o5)`= Parsin ${overflow} in {${flagKind}:${dataKind}}`
 
         state = parse(overflow, env)

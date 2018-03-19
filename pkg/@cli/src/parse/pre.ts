@@ -79,16 +79,18 @@ function recogFlagKind(
 }
 
 export function parseFlagPrefix(
-    overflow :Int[],
+    tail :Int[],
+    shift :Int,
     {flagKind} :Env,
 ) :State {
-    log(0o3)`Flag recognized: ${fromPoi(...overflow)}`
+    log(0o3)`Parsing flag prefix: ${flagKind} (${shift})`
 
     return {
         flagKind,
+        flagged: false,
         dataKind: null,
         content: [],
-        overflow,
+        overflow: tail.slice(shift),
     }
 }
 
@@ -112,8 +114,10 @@ export function parseFlag(
 
     return {
         flagKind,
+        flagged: true,
         dataKind,
-        content, overflow,
+        content,
+        overflow,
     }
 }
 
@@ -123,30 +127,41 @@ export function parseDataPrefix(
 ) :State {
     log(0o3)`Switchin to data parser for: ${fromPoi(...tail)}`
     
-    const {flagKind} = env
-    const {brac, sign} = Latin
-    const [dataKind, shift] = recogKind(tail, [
+    const {brac, digit, sign} = Latin
+    const dataSigns :Int[][] = [
+        [0 as Int],
         [brac.bracket[0]],
         [sign.equal[0]],
         [sign.plus[0]],
         [sign.minus[0]],
-    ], [
+        ...digit.arabic.map((dig)=> [dig])
+    ]
+    const digitKinds :(typeof Data.DIGIT)[] =
+        Array(digit.arabic.length).fill(Data.DIGIT)
+    const [dataKindG, shift] = recogKind(tail, dataSigns, [
+        Flag.MAIN,
         Data.LIST,
         Data.RAW,
         Data.NUM,
         Data.NUM,
+        ...digitKinds,
     ]) || [
-        Data.CHAR,
-        0
+        Data.EMPTY,
+        0 as Int,
     ]
-    const content = Data.LIST === dataKind
+    const content = Data.LIST === dataKindG
         ? tail.slice(0, shift)
         : []
+    const [flagKind, dataKind] = Flag.MAIN === dataKindG
+        ? [null, null]
+        : [env.flagKind, dataKindG]
+    
 
-    log(0o3)`${dataKind} (${fromPoi(...content)}) recognized…`
+    log(0o3)`${dataKindG} (${fromPoi(...content)}) recognized…`
 
     return {
         flagKind,
+        flagged: true,
         dataKind,
         content,
         overflow: tail.slice(shift),
@@ -157,10 +172,9 @@ export function parse(
     tail :Int[],
     env :Env,
 ) :State {
-    const isFlagEnv = env.flagKind && (!env.dataKind ||
-          Data.LIST === env.dataKind)
+    const isFlagEnv = env.flagKind && !env.dataKind
 
-    if (isFlagEnv) return (content.length
+    if (isFlagEnv) return (env.flagged
         ? parseDataPrefix
         : parseFlag
     )(tail, env)
@@ -171,7 +185,7 @@ export function parse(
         const [flagKind, shift] = flagRecog
         const env = proto({flagKind}, Env.Bluepr)
 
-        return parseFlagPrefix(tail.slice(shift), env)
+        return parseFlagPrefix(tail, shift, env)
     }
 
     return parseDataPrefix(tail, env)

@@ -16,7 +16,7 @@ import {Cmd} from "../schema/cmd"
 
 export namespace Data {
     export const {LIST, NUM} = DataTy
-    export const CHAR = DataTy.STR
+    export const DIGIT = DataTy.NUM_INT
     export const RAW = DataSchm.SY_DATA
     export const EMPTY = DataSchm.INITIAL
 
