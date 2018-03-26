@@ -1,25 +1,22 @@
 {
     "name": "@beyond-life/beyond",
     "description": "Life and beyond…",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": {
         "name": "J Schnell",
         "email": "labs@probit.link",
         "url": "https://git.io/probit"
     },
     "license": "GPL-3.0",
-
     "main": "lib/meta.js",
     "types": "lib/meta.d.ts",
-
     "bin": {
         "beyond-cmd": "lib/cmd.js"
     },
-
     "dependencies": {
-        "@beyond-life/lowbar": "~0.1.0",
-        "xstream": "^11.2.0",
-        "@cycle/run": "^4.1.0"
+        "@beyond-life/lowbar": "^0.1.1",
+        "@cycle/run": "^4.1.0",
+        "xstream": "^11.2.0"
     },
     "devDependencies": {
         "@types/node": "^9.4.6"
