@@ -1,7 +1,7 @@
 {
     "name": "@beyond-life/beyond",
     "description": "Life and beyond…",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "author": {
         "name": "J Schnell",
         "email": "labs@probit.link",
@@ -14,7 +14,7 @@
         "beyond-cmd": "lib/cmd.js"
     },
     "dependencies": {
-        "@beyond-life/lowbar": "^0.1.1",
+        "@beyond-life/lowbar": "^0.1.2",
         "@cycle/run": "^4.1.0",
         "xstream": "^11.2.0"
     },

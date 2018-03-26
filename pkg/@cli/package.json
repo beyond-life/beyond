@@ -1,7 +1,7 @@
 {
     "name": "@beyond-life/cli",
     "description": "Command line and beyond…",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "author": {
         "name": "J Schnell",
         "email": "labs@probit.link",
@@ -11,7 +11,7 @@
     "main": "lib/meta.js",
     "types": "lib/meta.d.ts",
     "dependencies": {
-        "@beyond-life/lowbar": "^0.1.1",
+        "@beyond-life/lowbar": "^0.1.2",
         "reflect-metadata": "^0.1.12"
     },
     "devDependencies": {
