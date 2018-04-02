@@ -1,7 +1,7 @@
 {
-	"name": "@beyond-life/base",
+	"name": "@beyond-life/pkg-base",
 	"private": true,
-    "devDependencies": {
-    	"lerna": "^2.8.0"
+	"devDependencies": {
+		"lerna": "^2.8.0"
 	}
 }
