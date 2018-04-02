@@ -1,6 +1,9 @@
-[submodule "gitignore"]
-	path = ignore
-	url = https://github.com/github/gitignore.git
-[submodule "law"]
-	path = law
+[submodule "sub/b-life@typescript-etc"]
+	path = sub/b-life@typescript-etc
+	url = https://github.com/beyond-life/typescript-etc
+[submodule "sub/probit@law"]
+	path = sub/probit@law
 	url = https://github.com/probitlabs/law.git
+[submodule "sub/github@ignore"]
+	path = sub/github@ignore
+	url = https://github.com/github/gitignore.git
